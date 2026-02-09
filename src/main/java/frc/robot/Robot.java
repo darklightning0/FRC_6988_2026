@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.Remote.IntakeArmMode;
 import frc.robot.subsystems.Remote.IntakeWheelMode;
 import frc.robot.subsystems.Remote.ShooterMode;
+import frc.robot.subsystems.Remote.IntakeMode;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import com.ctre.phoenix.sensors.PigeonIMU;
@@ -147,6 +148,7 @@ public class Robot extends TimedRobot {
 		IntakeWheelMode intakeWheelMode = m_robotContainer.m_remote.getIntakeWheelMode();
 		IntakeArmMode intakeArmMode = m_robotContainer.m_remote.getIntakeArmMode();
 		ShooterMode shooterMode = m_robotContainer.m_remote.getShooterMode();
+    IntakeMode intakeMode = m_robotContainer.m_remote.getIntakeMode();
 
 		SmartDashboard.putString("input_shooterMode", shooterMode.toString());
 		SmartDashboard.putString("input_intakeWheelMode", intakeWheelMode.toString());
@@ -154,6 +156,7 @@ public class Robot extends TimedRobot {
 		SmartDashboard.putNumber("input_innerElevatorTarget", innerElevatorTarget);
 		SmartDashboard.putNumber("input_outerElevatorTarget", outerElevatorTarget);
 		SmartDashboard.putBoolean("input_elevatorManual", m_robotContainer.m_remote.getElevatorManual());
+    SmartDashboard.putString("input_intakeMode", intakeMode.toString());
 
 		// Check ultrasonic sensor
 		// m_robotContainer.m_ultrasonicSensor.measureDistance();

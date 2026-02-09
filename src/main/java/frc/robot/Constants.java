@@ -53,6 +53,8 @@ public final class Constants {
 			}
 
 			public static class SRX {
+				public static final int Intake_Pulley = 0; //Intake Front Wheels
+				public static final int Intake_Gear = 0; //Intake Rear Wheels
 				public static final int Elevator_Outer = 16; // Big elevator motor
 				public static final int Elevator_Inner = 18; // Small elevator motor
 				public static final int Shooter_Left = 15; // Shooter left
@@ -84,6 +86,11 @@ public final class Constants {
 		}
 
 		public static class Output {
+			// Intake outputs
+			public static final double intakeIntake = 0.6;
+			public static final double intakeReverse = -0.6;
+			public static final double intakeIdle = 0.05;
+
 			// Outer output amplifier
 			public static final double outerMinFactor = 1.0; // should stay 1
 			public static final double outerMaxFactor = 1.8;

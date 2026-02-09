@@ -19,6 +19,12 @@ enum DriveMode {
 }
 
 public class Remote {
+
+    public static enum IntakeMode {
+        Intake,
+        Reverse,
+        Idle,
+    }
     // Intake kol hareketleri
     public static enum IntakeArmMode {
         Idle,
@@ -45,6 +51,7 @@ public class Remote {
     IntakeArmMode input_armIntake = IntakeArmMode.Idle;
     IntakeWheelMode input_wheelIntake = IntakeWheelMode.Idle;
     ShooterMode shooter_mode = ShooterMode.Idle;
+    IntakeMode intake_mode = IntakeMode.Idle;
     // static UltrasonicSensor ultrasonicSensor = new UltrasonicSensor(0, 0);
     // ElevatorMode input_elevatorMode = ElevatorMode.Idle;
     public double input_innerElevatorTarget = 0;
@@ -72,6 +79,14 @@ public class Remote {
 
     public ShooterMode getShooterMode() {
         return shooter_mode;
+    }
+
+    public IntakeMode getIntakeMode(){
+        return intake_mode;
+    }
+
+    public static double getLeftY(){
+        return getLeftY();
     }
 
     public IntakeWheelMode getIntakeWheelMode() {
@@ -218,8 +233,19 @@ public class Remote {
 
         inverseDriveDirection();
 
-        // Shooter
+        // Intake
+        if(operatorJoystickDef.isConnected()){
+            if(operatorJoystickDef.getLeftY() > 0.1){
+                intake_mode = IntakeMode.Intake;
+            } else if(operatorJoystickDef.getLeftY() < -0.1){
+                intake_mode = IntakeMode.Reverse;
+            } else {
+                intake_mode = IntakeMode.Idle;
+            }
+        }
 
+
+        // Shooter
          if (operatorJoystickDef.getRightTriggerAxis() > 0.1) {
             shooter_mode = ShooterMode.Shoot;
         } else if (operatorJoystickDef.getLeftTriggerAxis() > 0.1) {

@@ -24,9 +24,9 @@ public class Intake {
     double modeToPercent(IntakeMode mode) {
 		switch (mode) {
 			case Intake:
-				return SubsystemConstants.Output.intakeIntake;
+				return SubsystemConstants.Output.intakeIntake * Remote.getLeftY();
 			case Reverse:
-				return SubsystemConstants.Output.intakeReverse;
+				return SubsystemConstants.Output.intakeReverse * Remote.getLeftY();
 			case Idle:
 			default:
 				return SubsystemConstants.Output.intakeIdle;
