@@ -183,6 +183,8 @@ public class Robot extends TimedRobot {
 
 		// Shooter
 		m_robotContainer.m_shooter.mainloop(shooterMode);
+    //Intake
+    m_robotContainer.m_intake.mainloop(intakeMode);
 
 		// Intake wheel
 		//m_robotContainer.m_intakeWheels.mainloop(intakeWheelMode);

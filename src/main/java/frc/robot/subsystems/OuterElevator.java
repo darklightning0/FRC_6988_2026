@@ -13,7 +13,7 @@ import frc.robot.util.Util;
 
 
 public class OuterElevator {
-    private final TalonSRX motor = new TalonSRX(Constants.SubsystemConstants.TalonIDs.SRX.Elevator_Outer);
+    private final TalonSRX motor = new TalonSRX(999);
 
     private final double maxPos = 0.80; // 0.80 meters
 

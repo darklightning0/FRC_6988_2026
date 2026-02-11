@@ -11,7 +11,7 @@ import frc.robot.Constants.SubsystemConstants;
 import frc.robot.util.Util;
 
 public class InnerElevator {
-    private final TalonSRX motor = new TalonSRX(SubsystemConstants.TalonIDs.SRX.Elevator_Inner);
+    private final TalonSRX motor = new TalonSRX(999);
 
     private final PIDController pid = new PIDController(0, 0, 0);
 

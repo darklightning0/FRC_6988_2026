@@ -44,7 +44,7 @@ public final class Constants {
 		public static final double L4 = 0.9500;
 	}
 
-	// CORAL SHOOTER
+	// SHOOTER
 
 	public static class SubsystemConstants {
 		public static class TalonIDs {
@@ -55,9 +55,10 @@ public final class Constants {
 			public static class SRX {
 				public static final int Intake_Pulley = 0; //Intake Front Wheels
 				public static final int Intake_Gear = 0; //Intake Rear Wheels
-				public static final int Elevator_Outer = 16; // Big elevator motor
-				public static final int Elevator_Inner = 18; // Small elevator motor
-				public static final int Shooter_Left = 15; // Shooter left
+				public static final int shooter_M_left = 0; // Big elevator motor
+				public static final int shooter_M_right = 0; // Small elevator motor
+				public static final int shooter_belt = 0; // Shooter left
+				public static final int shooter_redline = 0; // Shooter left
 			}
 
 			public static class Spark {
@@ -109,8 +110,8 @@ public final class Constants {
 			public static final double innerUpMax = 0.85;
 
 			// Shooter output
-			public static final double shooterShoot = 0.3;
-			public static final double shooterReverse = -0.25;
+			public static final double shooterShoot = 0.5;
+			public static final double shooterReverse = -0.3;
 		}
 
 		public static class Voltage {

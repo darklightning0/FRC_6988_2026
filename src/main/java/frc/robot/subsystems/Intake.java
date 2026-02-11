@@ -13,20 +13,15 @@ public class Intake {
     public final TalonSRX gearCIM = new TalonSRX(Constants.SubsystemConstants.TalonIDs.SRX.Intake_Gear);
 
     public Intake() {
-		pulleyCIM.setInverted(true);// left
-		// rightRedline.setInverted(false);
-
-		gearCIM.setNeutralMode(NeutralMode.Brake);
-        pulleyCIM.setNeutralMode(NeutralMode.Brake);
-		// rightRedline.setNeutralMode(NeutralMode.Brake);
+		pulleyCIM.setInverted(true);
 	}
 
     double modeToPercent(IntakeMode mode) {
 		switch (mode) {
 			case Intake:
-				return SubsystemConstants.Output.intakeIntake * Remote.getLeftY();
+				return SubsystemConstants.Output.intakeIntake;
 			case Reverse:
-				return SubsystemConstants.Output.intakeReverse * Remote.getLeftY();
+				return SubsystemConstants.Output.intakeReverse;
 			case Idle:
 			default:
 				return SubsystemConstants.Output.intakeIdle;

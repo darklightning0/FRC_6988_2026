@@ -8,49 +8,18 @@ import frc.robot.Constants;
 import frc.robot.Constants.SubsystemConstants;
 import frc.robot.subsystems.Remote.ShooterMode;
 
+
 public class Shooter {
 
-	public final TalonSRX leftRedline = new TalonSRX(Constants.SubsystemConstants.TalonIDs.SRX.Shooter_Left);
-	// public final TalonSRX rightRedline = new
-	// TalonSRX(Constants.SubsystemConstants.TalonIDs.SRX.Shooter_Right);
+	public final TalonSRX hopperRedline = new TalonSRX(Constants.SubsystemConstants.TalonIDs.SRX.shooter_redline);
+	public final TalonSRX leftMain = new TalonSRX(Constants.SubsystemConstants.TalonIDs.SRX.shooter_M_left);
+	public final TalonSRX rightMain = new TalonSRX(Constants.SubsystemConstants.TalonIDs.SRX.shooter_M_right);
+	public final TalonSRX belt_CIM = new TalonSRX(Constants.SubsystemConstants.TalonIDs.SRX.shooter_belt);
 
 	public Shooter() {
-		leftRedline.setInverted(true);// left
-		// rightRedline.setInverted(false);
-
-		leftRedline.setNeutralMode(NeutralMode.Brake);
-		// rightRedline.setNeutralMode(NeutralMode.Brake);
+		leftMain.setInverted(true);// left
 	}
-	/*
-	 * public void mainloop(boolean objectSeen) {
-	 * if (objectSeen) {
-	 * if (mode != ShooterMode.Shoot) {
-	 * mode = ShooterMode.See;
-	 * }
-	 * } else {
-	 * if (mode == ShooterMode.See) {
-	 * mode = ShooterMode.Hold;
-	 * }
-	 * }
-	 * 
-	 * switch (mode) {
-	 * case Idle:
-	 * vel = 0;
-	 * break;
-	 * case See:
-	 * vel = 1.5;
-	 * case Hold:
-	 * vel = -0.05;
-	 * case Shoot:
-	 * vel = 5;
-	 * }
-	 * 
-	 * // Run motors to intake the game piece
-	 * //leftRedline.set(ControlMode.PercentOutput, percent);
-	 * //rightRedline.set(ControlMode.PercentOutput, percent);
-	 * }
-	 */
-
+	
 	double modeToPercent(ShooterMode mode) {
 		switch (mode) {
 			case Shoot:
@@ -59,14 +28,22 @@ public class Shooter {
 				return SubsystemConstants.Output.shooterReverse;
 			case Idle:
 			default:
-				return 0.;
+				return 0.0;
 		}
 	}
 
 	public void mainloop(ShooterMode shooterMode) {
-		double percent = modeToPercent(shooterMode);
-		// double percent = operatorJoystickDef.getRightTriggerAxis() * 0.2;
-		leftRedline.set(ControlMode.PercentOutput, percent);
-		// rightRedline.set(ControlMode.PercentOutput, percent);
+		double percent;
+		if(shooterMode == ShooterMode.Shoot){
+			percent = modeToPercent(shooterMode) * Remote.getRightTriggerAxis();
+		} else if(shooterMode == ShooterMode.Reverse){
+			percent = modeToPercent(shooterMode) * Remote.getLeftTriggerAxis();
+		} else {
+			percent = modeToPercent(shooterMode);
+		}
+		hopperRedline.set(ControlMode.PercentOutput, percent);
+		leftMain.set(ControlMode.PercentOutput, percent);
+		rightMain.set(ControlMode.PercentOutput, percent);
+		belt_CIM.set(ControlMode.PercentOutput, percent);
 	}
 }

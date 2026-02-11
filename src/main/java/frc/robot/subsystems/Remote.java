@@ -89,6 +89,14 @@ public class Remote {
         return getLeftY();
     }
 
+    public static double getRightTriggerAxis(){
+        return operatorJoystickDef.getRightTriggerAxis();
+    }
+
+    public static double getLeftTriggerAxis(){
+        return operatorJoystickDef.getLeftTriggerAxis();
+    }
+
     public IntakeWheelMode getIntakeWheelMode() {
         return input_wheelIntake;
     }
@@ -235,9 +243,9 @@ public class Remote {
 
         // Intake
         if(operatorJoystickDef.isConnected()){
-            if(operatorJoystickDef.getLeftY() > 0.1){
+            if(operatorJoystickDef.getLeftY() > 0){
                 intake_mode = IntakeMode.Intake;
-            } else if(operatorJoystickDef.getLeftY() < -0.1){
+            } else if(operatorJoystickDef.getLeftY() < 0){
                 intake_mode = IntakeMode.Reverse;
             } else {
                 intake_mode = IntakeMode.Idle;
@@ -246,9 +254,9 @@ public class Remote {
 
 
         // Shooter
-         if (operatorJoystickDef.getRightTriggerAxis() > 0.1) {
+         if (operatorJoystickDef.getRightTriggerAxis() > 0.05) {
             shooter_mode = ShooterMode.Shoot;
-        } else if (operatorJoystickDef.getLeftTriggerAxis() > 0.1) {
+        } else if (operatorJoystickDef.getLeftTriggerAxis() > 0.05) {
             shooter_mode = ShooterMode.Reverse;
         } else {
             shooter_mode = ShooterMode.Idle;
