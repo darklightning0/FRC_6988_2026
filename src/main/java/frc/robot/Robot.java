@@ -26,8 +26,6 @@ public class Robot extends TimedRobot {
 
   private final boolean kUseLimelight = false;
 
-  PigeonIMU pigeon2 = new PigeonIMU(21);
-
   public Robot() {
     m_robotContainer = new RobotContainer();
   }
@@ -43,7 +41,7 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
     double [] ypr = new double[3];
-		pigeon2.getYawPitchRoll(ypr);
+		m_robotContainer.pigeon2.getYawPitchRoll(ypr);
 		
 		SmartDashboard.putNumber("pigeonYaw", ypr[0]);
     System.out.println(LimelightHelpers.getTX("limelight"));
@@ -90,7 +88,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
-    pigeon2.setYaw(0);
+    m_robotContainer.pigeon2.setYaw(0);
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
 
