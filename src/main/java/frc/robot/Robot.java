@@ -18,6 +18,12 @@ import frc.robot.subsystems.Remote.IntakeMode;
 import edu.wpi.first.cameraserver.CameraServer;
 import com.ctre.phoenix.sensors.PigeonIMU;
 
+// AdvantageScope visualization imports
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
@@ -25,6 +31,10 @@ public class Robot extends TimedRobot {
   private final RobotContainer m_robotContainer;
 
   private final boolean kUseLimelight = false;
+
+  // AdvantageScope Field Visualization
+  private final Field2d m_field = new Field2d();
+  private SwerveDrivePoseEstimator m_poseEstimator;
 
   public Robot() {
     m_robotContainer = new RobotContainer();
@@ -34,16 +44,39 @@ public class Robot extends TimedRobot {
 	public void robotInit() {
 		CameraServer.startAutomaticCapture();
     LimelightHelpers.setPipelineIndex("limelight",0);
-  
+
+    // Initialize Pose Estimator for AdvantageScope
+    m_poseEstimator = new SwerveDrivePoseEstimator(
+        m_robotContainer.drivetrain.getKinematics(),
+        Rotation2d.fromDegrees(m_robotContainer.pigeon2.getYaw()),
+        m_robotContainer.drivetrain.getState().ModulePositions,
+        new Pose2d() // Start at 0,0
+    );
+
+    // Put the Field object to SmartDashboard so AdvantageScope can find it
+    SmartDashboard.putData("input_field", m_field);
 	}
 
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
+
+    // 1. Get Current Gyro Angle
+    Rotation2d gyroAngle = Rotation2d.fromDegrees(m_robotContainer.pigeon2.getYaw());
+
+    // 2. Get Module Positions from the Drivetrain
+    var modulePositions = m_robotContainer.drivetrain.getState().ModulePositions;
+
+    // 3. Update the Pose Estimator
+    m_poseEstimator.update(gyroAngle, modulePositions);
+
+    // 4. Update the Field Object with the calculated pose
+    m_field.setRobotPose(m_poseEstimator.getEstimatedPosition());
+
+    // Debug telemetry
     double [] ypr = new double[3];
 		m_robotContainer.pigeon2.getYawPitchRoll(ypr);
-		
-		SmartDashboard.putNumber("pigeonYaw", ypr[0]);
+		SmartDashboard.putNumber("input_pigeonYaw", ypr[0]);
     System.out.println(LimelightHelpers.getTX("limelight"));
     System.out.println(LimelightHelpers.getTY("limelight"));
     /*
@@ -148,13 +181,18 @@ public class Robot extends TimedRobot {
 		ShooterMode shooterMode = m_robotContainer.m_remote.getShooterMode();
     IntakeMode intakeMode = m_robotContainer.m_remote.getIntakeMode();
 
-		SmartDashboard.putString("input_shooterMode", shooterMode.toString());
-		SmartDashboard.putString("input_intakeWheelMode", intakeWheelMode.toString());
-		SmartDashboard.putString("input_intakeArmMode", intakeArmMode.toString());
-		SmartDashboard.putNumber("input_innerElevatorTarget", innerElevatorTarget);
-		SmartDashboard.putNumber("input_outerElevatorTarget", outerElevatorTarget);
-		SmartDashboard.putBoolean("input_elevatorManual", m_robotContainer.m_remote.getElevatorManual());
-    SmartDashboard.putString("input_intakeMode", intakeMode.toString());
+		// 1. Log Mechanism Modes (Strings)
+    SmartDashboard.putString("input_intake_mode", intakeMode.toString());
+    SmartDashboard.putString("input_shooter_mode", shooterMode.toString());
+
+    // 2. Log Percent Outputs (Numbers) for AdvantageScope
+    SmartDashboard.putNumber("input_intake_percent", m_robotContainer.m_intake.getMotorOutputPercent());
+    SmartDashboard.putNumber("input_shooter_percent", m_robotContainer.m_shooter.getMotorOutputPercent());
+
+    // 3. Log Gyro (Pigeon 2)
+    SmartDashboard.putNumber("input_gyro_degrees", m_robotContainer.pigeon2.getYaw());
+
+
 
 		// Check ultrasonic sensor
 		// m_robotContainer.m_ultrasonicSensor.measureDistance();

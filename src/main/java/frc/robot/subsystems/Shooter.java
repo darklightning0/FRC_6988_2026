@@ -10,6 +10,7 @@ import frc.robot.subsystems.Remote.ShooterMode;
 
 
 public class Shooter {
+	double percent;
 
 	public final TalonSRX hopperRedline = new TalonSRX(Constants.SubsystemConstants.TalonIDs.SRX.shooter_redline);
 	public final TalonSRX leftMain = new TalonSRX(Constants.SubsystemConstants.TalonIDs.SRX.shooter_M_left);
@@ -32,8 +33,12 @@ public class Shooter {
 		}
 	}
 
+	//Get the current motor output percent for telemetry
+	public double getMotorOutputPercent() {
+		return percent;
+	}
+
 	public void mainloop(ShooterMode shooterMode) {
-		double percent;
 		if(shooterMode == ShooterMode.Shoot){
 			percent = modeToPercent(shooterMode) * Remote.getRightTriggerAxis();
 		} else if(shooterMode == ShooterMode.Reverse){
@@ -46,4 +51,5 @@ public class Shooter {
 		rightMain.set(ControlMode.PercentOutput, percent);
 		belt_CIM.set(ControlMode.PercentOutput, percent);
 	}
+
 }

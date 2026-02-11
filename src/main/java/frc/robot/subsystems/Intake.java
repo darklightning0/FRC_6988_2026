@@ -9,6 +9,8 @@ import frc.robot.Constants.SubsystemConstants;
 import frc.robot.subsystems.Remote.IntakeMode;
 
 public class Intake {
+	double percent;
+
     public final TalonSRX pulleyCIM = new TalonSRX(Constants.SubsystemConstants.TalonIDs.SRX.Intake_Pulley);
     public final TalonSRX gearCIM = new TalonSRX(Constants.SubsystemConstants.TalonIDs.SRX.Intake_Gear);
 
@@ -28,12 +30,18 @@ public class Intake {
         }
     }
 	
+
+	//Get the current motor output percent for telemetry
+	public double getMotorOutputPercent() {
+		return percent;
+	}
     
 	public void mainloop(IntakeMode intakeMode) {
-		double percent = modeToPercent(intakeMode);
+		percent = modeToPercent(intakeMode);
 		// double percent = operatorJoystickDef.getRightTriggerAxis() * 0.2;
 		pulleyCIM.set(ControlMode.PercentOutput, percent);
 		gearCIM.set(ControlMode.PercentOutput, percent);
 	}
+
 }
 
