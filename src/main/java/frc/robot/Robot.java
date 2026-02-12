@@ -18,6 +18,7 @@ import frc.robot.subsystems.Remote.IntakeMode;
 import edu.wpi.first.cameraserver.CameraServer;
 import com.ctre.phoenix.sensors.PigeonIMU;
 
+import frc.robot.subsystems.Intake;
 // AdvantageScope visualization imports
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -168,6 +169,8 @@ public class Robot extends TimedRobot {
     m_robotContainer.m_innerElevator.config();
 		m_robotContainer.m_outerElevator.config();
 		m_robotContainer.m_remote.resetTargets();
+    
+    
 
   }
 
@@ -186,7 +189,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putString("input_shooter_mode", shooterMode.toString());
 
     // 2. Log Percent Outputs (Numbers) for AdvantageScope
-    SmartDashboard.putNumber("input_intake_percent", m_robotContainer.m_intake.getMotorOutputPercent());
+    //SmartDashboard.putNumber("input_intake_percent", m_robotContainer.m_intake.getMotorOutputPercent());
     SmartDashboard.putNumber("input_shooter_percent", m_robotContainer.m_shooter.getMotorOutputPercent());
 
     // 3. Log Gyro (Pigeon 2)

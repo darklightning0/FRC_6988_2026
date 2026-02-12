@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 //import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 import static frc.robot.Constants.ControllerConstants.driverJoystick;
+import static frc.robot.Constants.ControllerConstants.operatorJoystickDef;
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;

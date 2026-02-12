@@ -117,6 +117,7 @@ public class Remote {
 		input_outerElevatorTarget = 0;
         innerElevatorProgressControl.resetWithValue(0);
         outerElevatorProgressControl.resetWithValue(0);
+
     }
 
     public boolean getHomeButtonPressed() {
@@ -243,9 +244,9 @@ public class Remote {
 
         // Intake
         if(operatorJoystickDef.isConnected()){
-            if(operatorJoystickDef.getLeftY() > 0){
+            if(operatorJoystickDef.getLeftY() > 0.05){
                 intake_mode = IntakeMode.Intake;
-            } else if(operatorJoystickDef.getLeftY() < 0){
+            } else if(operatorJoystickDef.getLeftY() < 0.05){
                 intake_mode = IntakeMode.Reverse;
             } else {
                 intake_mode = IntakeMode.Idle;

@@ -10,7 +10,7 @@ import frc.robot.subsystems.Remote.ShooterMode;
 
 
 public class Shooter {
-	double percent;
+	double percent =0;
 
 	public final TalonSRX hopperRedline = new TalonSRX(Constants.SubsystemConstants.TalonIDs.SRX.shooter_redline);
 	public final TalonSRX leftMain = new TalonSRX(Constants.SubsystemConstants.TalonIDs.SRX.shooter_M_left);
