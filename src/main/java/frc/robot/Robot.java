@@ -31,7 +31,7 @@ public class Robot extends TimedRobot {
 
   private final RobotContainer m_robotContainer;
 
-  private final boolean kUseLimelight = false;
+  private boolean kUseLimelight = false;
 
   // AdvantageScope Field Visualization
   private final Field2d m_field = new Field2d();
@@ -54,6 +54,8 @@ public class Robot extends TimedRobot {
         new Pose2d() // Start at 0,0
     );
 
+    
+
     // Put the Field object to SmartDashboard so AdvantageScope can find it
     SmartDashboard.putData("input_field", m_field);
 	}
@@ -61,6 +63,13 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
+   
+    if(LimelightHelpers.getTV("limelight")==true){
+      kUseLimelight = true;
+
+    }else{
+      kUseLimelight = false;
+    }
 
     // 1. Get Current Gyro Angle
     Rotation2d gyroAngle = Rotation2d.fromDegrees(m_robotContainer.pigeon2.getYaw());
@@ -72,18 +81,25 @@ public class Robot extends TimedRobot {
     m_poseEstimator.update(gyroAngle, modulePositions);
 
     // 4. Update the Field Object with the calculated pose
+    
     m_field.setRobotPose(m_poseEstimator.getEstimatedPosition());
 
+    
     // Debug telemetry
     double [] ypr = new double[3];
 		m_robotContainer.pigeon2.getYawPitchRoll(ypr);
 		SmartDashboard.putNumber("input_pigeonYaw", ypr[0]);
-    System.out.println(LimelightHelpers.getTX("limelight"));
-    System.out.println(LimelightHelpers.getTY("limelight"));
+  
+    SmartDashboard.putNumber("limelightTX", LimelightHelpers.getTX("limelight"));
+    SmartDashboard.putNumber("limelightTY", LimelightHelpers.getTY("limelight"));
+    //  SmartDashboard.putNumber("limelightDistance", LimelightHelpers.getdist));
+    
+    
     /*
      * This example of adding Limelight is very simple and may not be sufficient for on-field use.
      * Users typically need to provide a standard deviation that scales with the distance to target
      * and changes with number of tags available.
+     * also listen to PHONK
     *
      * This example is sufficient to show that vision integration is possible, though exact implementation
      * of how to use vision should be tuned per-robot and to the team's specification.

@@ -18,7 +18,8 @@ public class Shooter {
 	public final TalonSRX belt_CIM = new TalonSRX(Constants.SubsystemConstants.TalonIDs.SRX.shooter_belt);
 
 	public Shooter() {
-		leftMain.setInverted(true);// left
+		rightMain.setInverted(true);// left
+		belt_CIM.setInverted(true);
 	}
 	
 	double modeToPercent(ShooterMode mode) {
@@ -40,9 +41,9 @@ public class Shooter {
 
 	public void mainloop(ShooterMode shooterMode) {
 		if(shooterMode == ShooterMode.Shoot){
-			percent = modeToPercent(shooterMode) * Remote.getRightTriggerAxis();
+			percent = modeToPercent(shooterMode);
 		} else if(shooterMode == ShooterMode.Reverse){
-			percent = modeToPercent(shooterMode) * Remote.getLeftTriggerAxis();
+			percent = modeToPercent(shooterMode);
 		} else {
 			percent = modeToPercent(shooterMode);
 		}

@@ -245,15 +245,15 @@ public class Remote {
         // Intake
         if(operatorJoystickDef.isConnected()){
             if(operatorJoystickDef.getLeftY() > 0.05){
-                intake_mode = IntakeMode.Intake;
-            } else if(operatorJoystickDef.getLeftY() < 0.05){
-                intake_mode = IntakeMode.Reverse;
+                shooter_mode = ShooterMode.Shoot;
+            } else if(operatorJoystickDef.getLeftY() < -0.05){
+                shooter_mode = ShooterMode.Reverse;
             } else {
-                intake_mode = IntakeMode.Idle;
+                shooter_mode = ShooterMode.Idle;
             }
         }
 
-
+/* 
         // Shooter
          if (operatorJoystickDef.getRightTriggerAxis() > 0.05) {
             shooter_mode = ShooterMode.Shoot;
@@ -262,7 +262,7 @@ public class Remote {
         } else {
             shooter_mode = ShooterMode.Idle;
         } 
-
+*/
         // Input -> intake arm command
         if (operatorJoystickDef.isConnected()) {
             if (operatorJoystickDef.getPOV() == 0) {
