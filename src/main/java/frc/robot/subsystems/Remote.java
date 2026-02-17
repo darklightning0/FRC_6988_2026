@@ -176,19 +176,19 @@ public class Remote {
     }
 
     public double getDriveX() {
-        if (driverJoystick.isConnected()) {
+        if (driverJoystick.isConnected() && Math.abs(driverJoystick.getLeftY()) > 0.05) {
             return -driverJoystick.getLeftY() * getDriveFactor()*driveDirection;
         }
         return 0;
     }
     public double getDriveY() {
-        if (driverJoystick.isConnected()) {
+        if (driverJoystick.isConnected()&& Math.abs(driverJoystick.getLeftX()) > 0.05) {
             return -driverJoystick.getLeftX() * getDriveFactor()*driveDirection;
         }
         return 0;
     }
     public double getDriveRotate() {
-        if (driverJoystick.isConnected()) {
+        if (driverJoystick.isConnected()&& Math.abs(driverJoystick.getRightX()) > 0.05) {
             return -driverJoystick.getRightX() * getDriveRotateFactor();
         }
         return 0;
@@ -253,7 +253,7 @@ public class Remote {
             }
         }
 
-/* 
+
         // Shooter
          if (operatorJoystickDef.getRightTriggerAxis() > 0.05) {
             shooter_mode = ShooterMode.Shoot;
@@ -262,7 +262,7 @@ public class Remote {
         } else {
             shooter_mode = ShooterMode.Idle;
         } 
-*/
+
         // Input -> intake arm command
         if (operatorJoystickDef.isConnected()) {
             if (operatorJoystickDef.getPOV() == 0) {
