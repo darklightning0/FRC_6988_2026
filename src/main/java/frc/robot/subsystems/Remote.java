@@ -48,10 +48,16 @@ public class Remote {
 
     }
 
+    public enum HoodMode {
+    MANUAL,
+    AUTO
+}
+
     IntakeArmMode input_armIntake = IntakeArmMode.Idle;
     IntakeWheelMode input_wheelIntake = IntakeWheelMode.Idle;
     ShooterMode shooter_mode = ShooterMode.Idle;
     IntakeMode intake_mode = IntakeMode.Idle;
+    double targetHoodAngle = 0;
     // static UltrasonicSensor ultrasonicSensor = new UltrasonicSensor(0, 0);
     // ElevatorMode input_elevatorMode = ElevatorMode.Idle;
     public double input_innerElevatorTarget = 0;
@@ -250,6 +256,14 @@ public class Remote {
                 shooter_mode = ShooterMode.Reverse;
             } else {
                 shooter_mode = ShooterMode.Idle;
+            }
+        }
+        //Adjustable Hood
+          if(operatorJoystickDef.isConnected()){
+            if(Math.abs(operatorJoystickDef.getRightX()) > 0.05){
+                targetHoodAngle = operatorJoystickDef.getRightX();
+            } else {
+                targetHoodAngle = 0;
             }
         }
 
