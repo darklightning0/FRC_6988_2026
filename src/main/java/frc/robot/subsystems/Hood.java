@@ -1,55 +1,86 @@
 package frc.robot.subsystems;
 
-import java.util.function.DoubleUnaryOperator;
-
-import com.ctre.phoenix.Util;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
-import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import frc.robot.Constants;
-import frc.robot.Constants.SubsystemConstants;
-import frc.robot.Constants.SubsystemConstants.AMTEncoder;
-import frc.robot.subsystems.Remote.IntakeMode;
 
 public class Hood {
-    double percent;
-    
-    public final TalonSRX hoodAdjuster = new TalonSRX(Constants.SubsystemConstants.TalonIDs.SRX.hoodMotor);
-    public final Encoder hoodEncoder = new Encoder(Constants.SubsystemConstants.AMTEncoder.hoodEncoderId,Constants.SubsystemConstants.AMTEncoder.hoodEncoderId2);
-    
-    double currentHoodAngle;
-    double targetHoodAngle;
-    public double getAngleHood(){
-        
 
-        currentHoodAngle = hoodEncoder.getDistance();
-        return currentHoodAngle;
+    private final TalonSRX hoodAdjuster =
+        new TalonSRX(Constants.SubsystemConstants.TalonIDs.SRX.hoodMotor);
 
-    }
-
-    public void setTargetAngle(double angle) {
-    targetHoodAngle = angle;
-    }
+    private final Encoder hoodEncoder =
+        new Encoder(
+            Constants.SubsystemConstants.AMTEncoder.hoodEncoderId,
+            Constants.SubsystemConstants.AMTEncoder.hoodEncoderId2
+        );
 
 
+    private static final double MIN_TICKS = 0;
+    private static final double MAX_TICKS = 25000; 
+
+
+    private final PIDController hoodPID =
+        new PIDController(0.0004, 0.0, 0.0);
+
+    private double targetTicks = 0.0;
 
     public Hood() {
+
         hoodAdjuster.setNeutralMode(NeutralMode.Brake);
-    
+
+        hoodEncoder.setSamplesToAverage(5);
+
+        hoodPID.setTolerance(200); 
     }
 
-   
-    
 
-    
+    public double getTicks() {
+        return hoodEncoder.get();
+    }
+
+    public void adjustTicks(double deltaFactor) {
+        targetTicks =+ MAX_TICKS*deltaFactor;
+ß
+        targetTicks = Math.max(MIN_TICKS,
+                      Math.min(MAX_TICKS, targetTicks));
+    }
+
+
+    public void setTargetTicks(double ticks) {
+        targetTicks = Math.max(MIN_TICKS,
+                      Math.min(MAX_TICKS, ticks));
+    }
+
+    public boolean atTarget() {
+        return hoodPID.atSetpoint();
+    }
+
+    public void resetEncoder() {
+        hoodEncoder.reset();
+        targetTicks = 0;
+    }
+
     public void mainloop() {
-        SmartDashboard.putNumber("Hood Encoder Ticks",hoodEncoder.get());
+
+        double currentTicks = getTicks();
+
+        double output =
+            hoodPID.calculate(currentTicks, targetTicks);
+
+        // Clamp motor power
+        output = Math.max(-0.3, Math.min(0.3, output));
+
+        hoodAdjuster.set(ControlMode.PercentOutput, output);
+
+        SmartDashboard.putNumber("Hood Ticks", currentTicks);
+        SmartDashboard.putNumber("Hood Target Ticks", targetTicks);
+        SmartDashboard.putNumber("Hood Output", output);
     }
-
 }
-
-  
