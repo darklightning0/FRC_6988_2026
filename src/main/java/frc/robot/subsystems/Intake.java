@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Constants.SubsystemConstants;
 import frc.robot.subsystems.Remote.IntakeMode;
@@ -12,7 +13,7 @@ public class Intake {
 	double percent;
 
     public final TalonSRX pulleyCIM = new TalonSRX(Constants.SubsystemConstants.TalonIDs.SRX.Intake_Pulley);
-    public final TalonSRX gearCIM = new TalonSRX(Constants.SubsystemConstants.TalonIDs.SRX.Intake_Gear);
+
 
     public Intake() {
 		pulleyCIM.setInverted(true);
@@ -40,7 +41,8 @@ public class Intake {
 		percent = modeToPercent(intakeMode);
 		// double percent = operatorJoystickDef.getRightTriggerAxis() * 0.2;
 		pulleyCIM.set(ControlMode.PercentOutput, percent);
-		gearCIM.set(ControlMode.PercentOutput, percent);
+		SmartDashboard.putNumber("intakeSpeed", pulleyCIM.getMotorOutputVoltage());
+
 	}
 
 }

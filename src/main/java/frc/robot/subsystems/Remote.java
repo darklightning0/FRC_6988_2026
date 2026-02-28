@@ -62,7 +62,7 @@ public class Remote {
     boolean elevator_manualHomePressed = false;
 
     boolean drive_slow = false;
-
+    private Hood hood;
     public DistanceControl innerElevatorProgressControl = new DistanceControl(0.0, 0.98);
     public DistanceControl outerElevatorProgressControl = new DistanceControl(0.0, 0.99);
 
@@ -86,7 +86,7 @@ public class Remote {
     }
 
     public static double getLeftY(){
-        return getLeftY();
+        return operatorJoystickDef.getLeftY();
     }
 
     public static double getRightTriggerAxis(){
@@ -185,6 +185,7 @@ public class Remote {
             return -driverJoystick.getLeftX() * getDriveFactor()*driveDirection;
         }
         return 0;
+        
     }
     public double getDriveRotate() {
         if (driverJoystick.isConnected()) {
@@ -243,20 +244,27 @@ public class Remote {
 
         // Intake
         if(operatorJoystickDef.isConnected()){
-            if(operatorJoystickDef.getLeftY() > 0){
+            if(operatorJoystickDef.getRightY() > 0.05){
                 intake_mode = IntakeMode.Intake;
-            } else if(operatorJoystickDef.getLeftY() < 0){
+            } else if(operatorJoystickDef.getRightY() < -0.05){
                 intake_mode = IntakeMode.Reverse;
             } else {
                 intake_mode = IntakeMode.Idle;
             }
         }
 
+        if (operatorJoystickDef.isConnected()) {
+            if (operatorJoystickDef.getLeftBumperButtonPressed()== true){
+                hood.adjustTicks(0.05);
+            } else if (operatorJoystickDef.getRightBumperButtonPressed()==true) {
+                hood.adjustTicks(-0.05);
+            } 
+        }
 
         // Shooter
-         if (operatorJoystickDef.getRightTriggerAxis() > 0.05) {
+         if (operatorJoystickDef.getLeftY()> 0.1) {
             shooter_mode = ShooterMode.Shoot;
-        } else if (operatorJoystickDef.getLeftTriggerAxis() > 0.05) {
+        } else if (operatorJoystickDef.getLeftY()<-0.1) {
             shooter_mode = ShooterMode.Reverse;
         } else {
             shooter_mode = ShooterMode.Idle;

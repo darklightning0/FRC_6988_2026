@@ -1,9 +1,12 @@
 package frc.robot.subsystems;
 
+import static frc.robot.Constants.ControllerConstants.operatorJoystick;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Constants.SubsystemConstants;
 import frc.robot.subsystems.Remote.ShooterMode;
@@ -39,17 +42,23 @@ public class Shooter {
 	}
 
 	public void mainloop(ShooterMode shooterMode) {
-		if(shooterMode == ShooterMode.Shoot){
-			percent = modeToPercent(shooterMode) * Remote.getRightTriggerAxis();
+		if(shooterMode == ShooterMode.Shoot){/////
+			percent = modeToPercent(shooterMode)*operatorJoystick.getLeftY();
+			belt_CIM.set(ControlMode.PercentOutput, -0.8);
 		} else if(shooterMode == ShooterMode.Reverse){
-			percent = modeToPercent(shooterMode) * Remote.getLeftTriggerAxis();
+			percent = modeToPercent(shooterMode)* -operatorJoystick.getLeftY();
+			belt_CIM.set(ControlMode.PercentOutput, 0.8);
 		} else {
 			percent = modeToPercent(shooterMode);
+			belt_CIM.set(ControlMode.PercentOutput, 0);
 		}
+		
+		SmartDashboard.putNumber("hopper output",belt_CIM.getMotorOutputPercent());
+		
 		hopperRedline.set(ControlMode.PercentOutput, percent);
 		leftMain.set(ControlMode.PercentOutput, percent);
 		rightMain.set(ControlMode.PercentOutput, percent);
-		belt_CIM.set(ControlMode.PercentOutput, percent);
+		
 	}
 
 }

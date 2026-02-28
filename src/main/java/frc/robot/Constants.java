@@ -53,12 +53,13 @@ public final class Constants {
 			}
 
 			public static class SRX {
-				public static final int Intake_Pulley = 0; //Intake Front Wheels
+				public static final int Intake_Pulley = 19; //Intake Front Wheels
 				public static final int Intake_Gear = 0; //Intake Rear Wheels
-				public static final int shooter_M_left = 0; // Big elevator motor
-				public static final int shooter_M_right = 0; // Small elevator motor
-				public static final int shooter_belt = 0; // Shooter left
+				public static final int shooter_M_left = 16; // Big elevator motor
+				public static final int shooter_M_right = 18; // Small elevator motor
+				public static final int shooter_belt = 15; // Shooter left
 				public static final int shooter_redline = 0; // Shooter left
+				public static final int hoodMotor = 0;
 			}
 
 			public static class Spark {
@@ -80,6 +81,8 @@ public final class Constants {
 			public static final int Elevator_Inner_B = 7;
 			public static final int Elevator_Outer_A = 8;
 			public static final int Elevator_Outer_B = 9;
+			public static final int hoodEncoderId = 0;
+			public static final int hoodEncoderId2 = 0;
 		}
 		
 		public static class Switch {
@@ -88,8 +91,8 @@ public final class Constants {
 
 		public static class Output {
 			// Intake outputs
-			public static final double intakeIntake = 0.6;
-			public static final double intakeReverse = -0.6;
+			public static final double intakeIntake = 0.45;
+			public static final double intakeReverse = -0.45;
 			public static final double intakeIdle = 0.05;
 
 			// Outer output amplifier
@@ -110,8 +113,8 @@ public final class Constants {
 			public static final double innerUpMax = 0.85;
 
 			// Shooter output
-			public static final double shooterShoot = 0.5;
-			public static final double shooterReverse = -0.3;
+			public static final double shooterShoot = 1.0;
+			public static final double shooterReverse = -1.0;
 		}
 
 		public static class Voltage {
