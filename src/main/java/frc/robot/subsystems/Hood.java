@@ -51,6 +51,7 @@ public class Hood {
 
     public void setTargetTicks(double ticks) {
         targetTicks = MathUtil.clamp(ticks, MIN_TICKS, MAX_TICKS);
+        hoodPID.setSetpoint(targetTicks);
     }
 
     public boolean atTarget() {

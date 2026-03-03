@@ -5,14 +5,10 @@ import static frc.robot.Constants.ControllerConstants.driverJoystickDef;
 import static frc.robot.Constants.ControllerConstants.operatorJoystick;
 import static frc.robot.Constants.ControllerConstants.operatorJoystickDef;
 
-import com.revrobotics.jni.RevJNIWrapper;
-
 import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
 import frc.robot.Constants.SubsystemConstants.RemoteOperatorButtons;
 import frc.robot.LimelightHelpers.RawFiducial;
-import frc.robot.util.DistanceControl;
-import frc.robot.util.Util;
 
 // import frc.robot.Constants.SubsystemConstants.RemoteButtons;
 // import frc.robot.Constants.SubsystemConstants.RemoteOperatorButtons;
@@ -102,7 +98,7 @@ public class Remote {
 
         tyToShooterSpeed.put(-15.0, 0.95);
         tyToShooterSpeed.put(0.0, 0.6);
-        tyToShooterSpeed.put(-15.0, 0.35);
+        tyToShooterSpeed.put(15.0, 0.35);
 
 
     }

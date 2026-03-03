@@ -20,7 +20,6 @@ import frc.robot.subsystems.Remote.IntakeMode;
 import edu.wpi.first.cameraserver.CameraServer;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.ctre.phoenix6.SignalLogger;
-import com.ctre.phoenix6.hardware.Pigeon2;
 
 // AdvantageScope visualization imports
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -173,8 +172,6 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-    m_robotContainer.m_innerElevator.config();
-		m_robotContainer.m_outerElevator.config();
 		m_robotContainer.m_remote.resetTargets();
 
   }
@@ -236,30 +233,19 @@ public class Robot extends TimedRobot {
           m_robotContainer.m_shooter.mainloop(Remote.ShooterMode.Rev);
         }
       }
-    } else { 
+     else { 
     if(m_robotContainer.m_remote.hood_mode == HoodMode.ManualUp){
       m_robotContainer.m_hood.adjustTicks(300);
     } else if(m_robotContainer.m_remote.hood_mode == HoodMode.ManualDown){
       m_robotContainer.m_hood.adjustTicks(-300);
     } else if(m_robotContainer.m_remote.hood_mode == HoodMode.ReturnToZero){
-      m_robotContainer.m_hood.adjustTicks(0);
+      m_robotContainer.m_hood.setTargetTicks(0);
     }
     // Shooter
 		m_robotContainer.m_shooter.mainloop(m_robotContainer.m_remote.getShooterMode());
   }
     m_robotContainer.m_hood.mainloop();
-
-		// Outer Elevator
-		m_robotContainer.m_outerElevator.setEnabled(true);
-		m_robotContainer.m_outerElevator.mainloop(outerElevatorTarget, m_robotContainer.m_remote.getHomeButtonPressed());
-
-
-
-		// Inner Elevator
-		m_robotContainer.m_innerElevator.setEnabled(false);
-		// m_robotContainer.m_innerElevator.setTargetPos(0.40);
-		m_robotContainer.m_innerElevator.mainloop(innerElevatorTarget, m_robotContainer.m_remote.getHomeButton());
-
+    }
 
     //Intake
     m_robotContainer.m_intake.mainloop(intakeMode);

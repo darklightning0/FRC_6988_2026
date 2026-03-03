@@ -37,8 +37,6 @@ import static frc.robot.Constants.ControllerConstants.operatorJoystick;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Hood;
-import frc.robot.subsystems.InnerElevator;
-import frc.robot.subsystems.OuterElevator;
 import frc.robot.subsystems.Remote;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Intake;
@@ -64,10 +62,6 @@ public class RobotContainer {
     
 
     public final Remote m_remote = new Remote();
-    public final OuterElevator m_outerElevator = new OuterElevator();
-    public final InnerElevator m_innerElevator = new InnerElevator();
-    //public final IntakeWheels m_intakeWheels = new IntakeWheels();
-    //public final IntakeArm m_intakeArm = new IntakeArm();
     public final Shooter m_shooter = new Shooter();
     public final Intake m_intake = new Intake();
     public final Hood m_hood = new Hood();
