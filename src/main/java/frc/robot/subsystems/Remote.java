@@ -82,10 +82,20 @@ public class Remote {
     // Here we will be creating private constructor
     // restricted to this class itself
     public Remote() {
-     distanceToPercent.put(1.0, 0.35); // distance and hood angle ticks
+    distanceToPercent.put(1.0, 0.35); // distance and hood angle ticks
     distanceToPercent.put(2.0, 0.50);
     distanceToPercent.put(3.0, 0.65);
+
+        tyToHoodTicks.put(-15.0, 18000.0);
+        tyToHoodTicks.put(0.0, 10000.0);
+        tyToHoodTicks.put(15.0, 2000.0);
     }
+
+    public enum HoodMode {ManualUp, ManualDown, AutoAim, ReturnToZero}
+    public HoodMode hood_mode = HoodMode.ReturnToZero;
+
+    public InterpolatingDoubleTreeMap tyToHoodTicks = new InterpolatingDoubleTreeMap();
+
 
     public IntakeArmMode getIntakeArmMode() {
         return input_armIntake;
@@ -300,12 +310,33 @@ public class Remote {
         } 
 
         // Climb
-        if(operatorJoystickDef.getRightBumperButton() == true){
+        if(driverJoystickDef.getRightBumperButton() == true){
             climb_mode = ClimbMode.Climb;
-        } else if (operatorJoystickDef.getLeftBumperButton() == true){
+        } else if (driverJoystickDef.getLeftBumperButton() == true){
             climb_mode = ClimbMode.Reverse;
         }else{
             climb_mode = ClimbMode.Idle;
+        }
+
+        // Hood
+        if (operatorJoystickDef.getYButton()){
+            hood_mode = HoodMode.AutoAim;
+            shooter_mode = ShooterMode.Shoot;
+        }else if (operatorJoystickDef.getRightBumperButton()){
+            hood_mode = HoodMode.ManualUp;
+            shooter_mode = ShooterMode.Idle;
+        }else if(operatorJoystickDef.getLeftBumperButton()){
+            hood_mode = HoodMode.ManualDown;
+            shooter_mode = ShooterMode.Idle;
+        }else{
+            hood_mode = HoodMode.ReturnToZero;
+            if (operatorJoystickDef.getLeftY()> 0.1) {
+                shooter_mode = ShooterMode.Reverse;
+            } else if (operatorJoystickDef.getLeftY()<-0.1) {
+                shooter_mode = ShooterMode.Shoot;
+            } else {
+                shooter_mode = ShooterMode.Idle;
+            } 
         }
 
         // Input -> intake arm command

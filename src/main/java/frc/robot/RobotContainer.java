@@ -31,6 +31,8 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 //import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 import static frc.robot.Constants.ControllerConstants.driverJoystick;
+import static frc.robot.Constants.ControllerConstants.driverJoystickID;
+import static frc.robot.Constants.ControllerConstants.operatorJoystick;
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -131,6 +133,19 @@ public class RobotContainer {
         driverJoystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
         drivetrain.registerTelemetry(logger::telemeterize);
+
+        operatorJoystick.y().whileTrue(
+            drivetrain.applyRequest(() -> {
+                double rotRate = 0;
+                if(LimelightHelpers.getTV("limelight")){
+                    rotRate = -LimelightHelpers.getTX("limelight") * 0.03;
+                }
+
+                return drive.withVelocityX(-driverJoystick.getLeftY() * MaxSpeed)
+                .withVelocityY(-driverJoystick.getLeftX() * MaxSpeed)
+                .withRotationalRate(rotRate * MaxAngularRate);
+            })
+        );
     }
 
     public Command getAutonomousCommand() {

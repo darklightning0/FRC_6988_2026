@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -26,15 +27,14 @@ public class Hood {
 
 
     private final PIDController hoodPID =
-        new PIDController(0.0004, 0.0, 0.0);
+        new PIDController(0.002, 0.0, 0.0);
 
     private double targetTicks = 0.0;
 
     public Hood() {
 
         hoodAdjuster.setNeutralMode(NeutralMode.Brake);
- 
-
+        hoodEncoder.setReverseDirection(false);
         hoodPID.setTolerance(200); 
     }
 
@@ -42,19 +42,15 @@ public class Hood {
     public double getTicks() {
         return hoodEncoder.get();
     }
-/* 
-    public void adjustTicks(double deltaFactor) {
-        targetTicks =+ MAX_TICKS*deltaFactor;
 
-        targetTicks = Math.max(MIN_TICKS,
-                      Math.min(MAX_TICKS, targetTicks));
+    public void adjustTicks(double delta) {
+        setTargetTicks(targetTicks+delta);
     }
-                      */
+                      
 
 
     public void setTargetTicks(double ticks) {
-        targetTicks = Math.max(MIN_TICKS,
-                      Math.min(MAX_TICKS, ticks));
+        targetTicks = MathUtil.clamp(ticks, MIN_TICKS, MAX_TICKS);
     }
 
     public boolean atTarget() {
@@ -74,7 +70,7 @@ public class Hood {
             hoodPID.calculate(currentTicks, targetTicks);
 
         // Clamp motor power
-        output = Math.max(-0.2, Math.min(0., output));
+        output = MathUtil.clamp(output, -0.4, 0.4);
 
         hoodAdjuster.set(ControlMode.PercentOutput, output);
 

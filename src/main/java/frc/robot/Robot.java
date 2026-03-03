@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.Remote.ClimbMode;
+import frc.robot.subsystems.Remote.HoodMode;
 import frc.robot.subsystems.Remote.IntakeArmMode;
 import frc.robot.subsystems.Remote.IntakeWheelMode;
 import frc.robot.subsystems.Remote.ShooterMode;
@@ -214,6 +215,22 @@ public class Robot extends TimedRobot {
 		// if (driverJoystickDef.getYButton()) {
 		// m_robotContainer.m_innerElevator.config();
 		// }
+
+    double currentTY = LimelightHelpers.getTY("limelight");
+
+    if(m_robotContainer.m_remote.hood_mode == HoodMode.AutoAim){
+      if(LimelightHelpers.getTV("limelight")){
+        double requiredTicks = m_robotContainer.m_remote.tyToHoodTicks.get(currentTY);
+        m_robotContainer.m_hood.setTargetTicks(requiredTicks);
+      }
+    } else if(m_robotContainer.m_remote.hood_mode == HoodMode.ManualUp){
+      m_robotContainer.m_hood.adjustTicks(300);
+    } else if(m_robotContainer.m_remote.hood_mode == HoodMode.ManualDown){
+      m_robotContainer.m_hood.adjustTicks(-300);
+    } else if(m_robotContainer.m_remote.hood_mode == HoodMode.ReturnToZero){
+      m_robotContainer.m_hood.adjustTicks(0);
+    }
+    m_robotContainer.m_hood.mainloop();
 
 		// Outer Elevator
 		m_robotContainer.m_outerElevator.setEnabled(true);
