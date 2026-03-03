@@ -14,6 +14,7 @@ import frc.robot.subsystems.Remote.ShooterMode;
 
 public class Shooter {
 	double percent;
+	double h_percent;
 
 	public final TalonSRX hopperRedline = new TalonSRX(Constants.SubsystemConstants.TalonIDs.SRX.shooter_redline);
 	public final TalonSRX leftMain = new TalonSRX(Constants.SubsystemConstants.TalonIDs.SRX.shooter_M_left);
@@ -21,7 +22,8 @@ public class Shooter {
 	public final TalonSRX belt_CIM = new TalonSRX(Constants.SubsystemConstants.TalonIDs.SRX.shooter_belt);
 
 	public Shooter() {
-		leftMain.setInverted(true);// left
+		
+		belt_CIM.setInverted(true);
 	}
 	
 	double modeToPercent(ShooterMode mode) {
@@ -44,18 +46,20 @@ public class Shooter {
 	public void mainloop(ShooterMode shooterMode) {
 		if(shooterMode == ShooterMode.Shoot){/////
 			percent = modeToPercent(shooterMode)*operatorJoystick.getLeftY();
-			belt_CIM.set(ControlMode.PercentOutput, -0.8);
+			hopperRedline.set(ControlMode.PercentOutput, 0.35);
+			belt_CIM.set(ControlMode.PercentOutput, 0.8);
 		} else if(shooterMode == ShooterMode.Reverse){
 			percent = modeToPercent(shooterMode)* -operatorJoystick.getLeftY();
-			belt_CIM.set(ControlMode.PercentOutput, 0.8);
+			hopperRedline.set(ControlMode.PercentOutput, -0.35);
+			belt_CIM.set(ControlMode.PercentOutput, -0.8);
 		} else {
 			percent = modeToPercent(shooterMode);
+			hopperRedline.set(ControlMode.PercentOutput, 0);
 			belt_CIM.set(ControlMode.PercentOutput, 0);
 		}
 		
 		SmartDashboard.putNumber("hopper output",belt_CIM.getMotorOutputPercent());
-		
-		hopperRedline.set(ControlMode.PercentOutput, percent);
+		SmartDashboard.putNumber("AA", 555555);
 		leftMain.set(ControlMode.PercentOutput, percent);
 		rightMain.set(ControlMode.PercentOutput, percent);
 		

@@ -6,13 +6,17 @@ import static frc.robot.Constants.ControllerConstants.operatorJoystick;
 import static frc.robot.Constants.ControllerConstants.operatorJoystickDef;
 
 import frc.robot.Constants;
+import frc.robot.LimelightHelpers;
 import frc.robot.Constants.SubsystemConstants.RemoteOperatorButtons;
+import frc.robot.LimelightHelpers.RawFiducial;
 import frc.robot.util.DistanceControl;
 import frc.robot.util.Util;
 
 // import frc.robot.Constants.SubsystemConstants.RemoteButtons;
 // import frc.robot.Constants.SubsystemConstants.RemoteOperatorButtons;
 // import frc.robot.util.UltrasonicSensor;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 enum DriveMode {
 
@@ -47,6 +51,9 @@ public class Remote {
         Reverse,
 
     }
+    public InterpolatingDoubleTreeMap distanceToPercent = new InterpolatingDoubleTreeMap();
+    private double limelightDist;
+    private RawFiducial[] limelightData;
 
     IntakeArmMode input_armIntake = IntakeArmMode.Idle;
     IntakeWheelMode input_wheelIntake = IntakeWheelMode.Idle;
@@ -63,14 +70,14 @@ public class Remote {
 
     boolean drive_slow = false;
     private Hood hood;
-    public DistanceControl innerElevatorProgressControl = new DistanceControl(0.0, 0.98);
-    public DistanceControl outerElevatorProgressControl = new DistanceControl(0.0, 0.99);
 
     // Constructor
     // Here we will be creating private constructor
     // restricted to this class itself
     public Remote() {
-
+     distanceToPercent.put(1.0, 0.35); // distance and hood angle ticks
+    distanceToPercent.put(2.0, 0.50);
+    distanceToPercent.put(3.0, 0.65);
     }
 
     public IntakeArmMode getIntakeArmMode() {
@@ -115,8 +122,7 @@ public class Remote {
     public void resetTargets() {
         input_innerElevatorTarget = 0.;
 		input_outerElevatorTarget = 0;
-        innerElevatorProgressControl.resetWithValue(0);
-        outerElevatorProgressControl.resetWithValue(0);
+     
     }
 
     public boolean getHomeButtonPressed() {
@@ -195,15 +201,32 @@ public class Remote {
     }
 
     public void mainloop() {
+      
+       
+    
+
+    if (LimelightHelpers.getTV("limelight")==true ){
+        RawFiducial[] fiducials = LimelightHelpers.getRawFiducials("limelight");
+   
         
+    for (RawFiducial fiducial : fiducials){
+        int id = fiducial.id;
+        double distToCamera = fiducial.distToCamera;
+        double distToRobot = fiducial.distToRobot;
+        double ambiguity = fiducial.ambiguity;
+
+
+}
+
+}
+  
         // Elevator Manual Toggle
         if (operatorJoystickDef.getRightBumperButtonPressed()) {
             elevator_manual = !elevator_manual;
-            innerElevatorProgressControl.resetWithValue(input_innerElevatorTarget);
-            outerElevatorProgressControl.resetWithValue(input_outerElevatorTarget);
+         
         }
 
-
+        
         elevator_manualHomePressed = operatorJoystickDef.getRawButtonPressed(RemoteOperatorButtons.home);
         elevator_manualHome = operatorJoystickDef.getRawButton(RemoteOperatorButtons.home);
 
@@ -218,10 +241,7 @@ public class Remote {
 
         // Elevator
         if (elevator_manual) {
-            double innerElevatorVelocity = Util.deadband(operatorJoystick.getRightY(), 0.12) * -0.55;
-            input_innerElevatorTarget = innerElevatorProgressControl.mainloop(innerElevatorVelocity);
-            double outerElevatorVelocity = Util.deadband(operatorJoystick.getLeftY(), 0.12) * -0.35;
-            input_outerElevatorTarget = outerElevatorProgressControl.mainloop(outerElevatorVelocity);
+         
         } else {
             if (operatorJoystickDef.isConnected()) {
                 if (operatorJoystickDef.getAButton()) {
@@ -246,8 +266,10 @@ public class Remote {
         if(operatorJoystickDef.isConnected()){
             if(operatorJoystickDef.getRightY() > 0.05){
                 intake_mode = IntakeMode.Intake;
+                //-hood.setTargetTicks(0);
             } else if(operatorJoystickDef.getRightY() < -0.05){
                 intake_mode = IntakeMode.Reverse;
+
             } else {
                 intake_mode = IntakeMode.Idle;
             }
@@ -263,9 +285,9 @@ public class Remote {
 
         // Shooter
          if (operatorJoystickDef.getLeftY()> 0.1) {
-            shooter_mode = ShooterMode.Shoot;
-        } else if (operatorJoystickDef.getLeftY()<-0.1) {
             shooter_mode = ShooterMode.Reverse;
+        } else if (operatorJoystickDef.getLeftY()<-0.1) {
+            shooter_mode = ShooterMode.Shoot;
         } else {
             shooter_mode = ShooterMode.Idle;
         } 

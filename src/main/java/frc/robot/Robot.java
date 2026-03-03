@@ -17,6 +17,7 @@ import frc.robot.subsystems.Remote.IntakeMode;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import com.ctre.phoenix.sensors.PigeonIMU;
+import com.ctre.phoenix6.hardware.Pigeon2;
 
 // AdvantageScope visualization imports
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -43,7 +44,8 @@ public class Robot extends TimedRobot {
   @Override
 	public void robotInit() {
 		CameraServer.startAutomaticCapture();
-    LimelightHelpers.setPipelineIndex("limelight",0);
+    LimelightHelpers.setPipelineIndex("limelight",1);
+    //m_robotContainer.pigeon2.setYaw(0.0);
 
     // Initialize Pose Estimator for AdvantageScope
     m_poseEstimator = new SwerveDrivePoseEstimator(
@@ -221,7 +223,7 @@ public class Robot extends TimedRobot {
 		m_robotContainer.m_shooter.mainloop(shooterMode);
     //Intake
     m_robotContainer.m_intake.mainloop(intakeMode);
-
+    m_robotContainer.m_hood.mainloop();
 		// Intake wheel
 		//m_robotContainer.m_intakeWheels.mainloop(intakeWheelMode);
 

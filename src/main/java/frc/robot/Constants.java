@@ -50,16 +50,18 @@ public final class Constants {
 		public static class TalonIDs {
 			public static class FX {
 				public static final int Intake_Arm = 24; // Intake arm motor
+				public static final int leader_climb = 0;
+				public static final int follower_climb = 0;  
+
 			}
 
 			public static class SRX {
-				public static final int Intake_Pulley = 19; //Intake Front Wheels
-				public static final int Intake_Gear = 0; //Intake Rear Wheels
-				public static final int shooter_M_left = 16; // Big elevator motor
-				public static final int shooter_M_right = 18; // Small elevator motor
-				public static final int shooter_belt = 15; // Shooter left
-				public static final int shooter_redline = 0; // Shooter left
-				public static final int hoodMotor = 0;
+				public static final int Intake_Pulley = 14; //Intake Front Wheels
+				public static final int shooter_M_left = 18; // Big elevator motor
+				public static final int shooter_M_right = 17; // Small elevator motor
+				public static final int shooter_belt = 16; // Shooter left
+				public static final int shooter_redline = 15; // Shooter left
+				public static final int hoodMotor = 20;
 			}
 
 			public static class Spark {
@@ -82,7 +84,7 @@ public final class Constants {
 			public static final int Elevator_Outer_A = 8;
 			public static final int Elevator_Outer_B = 9;
 			public static final int hoodEncoderId = 0;
-			public static final int hoodEncoderId2 = 0;
+			public static final int hoodEncoderId2 = 1;
 		}
 		
 		public static class Switch {

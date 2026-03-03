@@ -12,6 +12,7 @@ import frc.robot.subsystems.Remote.IntakeMode;
 public class Intake {
 	double percent;
 
+
     public final TalonSRX pulleyCIM = new TalonSRX(Constants.SubsystemConstants.TalonIDs.SRX.Intake_Pulley);
 
 
@@ -25,7 +26,7 @@ public class Intake {
 				return SubsystemConstants.Output.intakeIntake;
 			case Reverse:
 				return SubsystemConstants.Output.intakeReverse;
-			case Idle:
+			case Idle:  
 			default:
 				return SubsystemConstants.Output.intakeIdle;
         }
@@ -42,7 +43,7 @@ public class Intake {
 		// double percent = operatorJoystickDef.getRightTriggerAxis() * 0.2;
 		pulleyCIM.set(ControlMode.PercentOutput, percent);
 		SmartDashboard.putNumber("intakeSpeed", pulleyCIM.getMotorOutputVoltage());
-
+		
 	}
 
 }

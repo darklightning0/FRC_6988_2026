@@ -17,8 +17,7 @@ public class Hood {
 
     private final Encoder hoodEncoder =
         new Encoder(
-            Constants.SubsystemConstants.AMTEncoder.hoodEncoderId,
-            Constants.SubsystemConstants.AMTEncoder.hoodEncoderId2
+            0,1
         );
 
 
@@ -34,8 +33,7 @@ public class Hood {
     public Hood() {
 
         hoodAdjuster.setNeutralMode(NeutralMode.Brake);
-
-        hoodEncoder.setSamplesToAverage(5);
+ 
 
         hoodPID.setTolerance(200); 
     }
@@ -75,7 +73,7 @@ public class Hood {
             hoodPID.calculate(currentTicks, targetTicks);
 
         // Clamp motor power
-        output = Math.max(-0.3, Math.min(0.3, output));
+        output = Math.max(-0.2, Math.min(0., output));
 
         hoodAdjuster.set(ControlMode.PercentOutput, output);
 
