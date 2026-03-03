@@ -13,8 +13,9 @@ import frc.robot.subsystems.Remote.ShooterMode;
 
 
 public class Shooter {
-	double percent;
-	double h_percent;
+	double percent = 0.0;
+	double h_percent = 0.0;
+	double custom_speed = 0.0;
 
 	public final TalonSRX hopperRedline = new TalonSRX(Constants.SubsystemConstants.TalonIDs.SRX.shooter_redline);
 	public final TalonSRX leftMain = new TalonSRX(Constants.SubsystemConstants.TalonIDs.SRX.shooter_M_left);
@@ -38,13 +39,53 @@ public class Shooter {
 		}
 	}
 
+	public void setCustomSpeed(double speed){
+		this.custom_speed = speed;
+	}
+
 	//Get the current motor output percent for telemetry
 	public double getMotorOutputPercent() {
 		return percent;
 	}
 
 	public void mainloop(ShooterMode shooterMode) {
-		if(shooterMode == ShooterMode.Shoot){/////
+
+		double flywheelSpeed = 0.0;
+		if(this.custom_speed > 0){
+			flywheelSpeed = this.custom_speed;
+		} else {
+			flywheelSpeed = Constants.SubsystemConstants.Output.shooterShoot * Math.abs(operatorJoystick.getLeftY());
+		}
+
+		switch(shooterMode){
+			case Rev:
+				percent = flywheelSpeed;
+				hopperRedline.set(ControlMode.PercentOutput, 0.0);
+				belt_CIM.set(ControlMode.PercentOutput, 0.0);
+				break;
+
+			case Shoot:
+				percent = flywheelSpeed;
+				hopperRedline.set(ControlMode.PercentOutput, 0.35);
+				belt_CIM.set(ControlMode.PercentOutput, 0.8);
+				break;
+
+			case Reverse:
+				percent = Constants.SubsystemConstants.Output.shooterReverse;
+				hopperRedline.set(ControlMode.PercentOutput, -0.35);
+				belt_CIM.set(ControlMode.PercentOutput, -0.8);
+				break;
+
+			case Idle:
+			default:
+				percent = 0.0;
+				hopperRedline.set(ControlMode.PercentOutput, 0.0);
+				belt_CIM.set(ControlMode.PercentOutput, 0.0);
+				this.custom_speed = 0.0;
+				break;
+		}
+/* 
+		if(shooterMode == ShooterMode.Shoot){
 			percent = modeToPercent(shooterMode)*operatorJoystick.getLeftY();
 			hopperRedline.set(ControlMode.PercentOutput, 0.35);
 			belt_CIM.set(ControlMode.PercentOutput, 0.8);
@@ -57,9 +98,9 @@ public class Shooter {
 			hopperRedline.set(ControlMode.PercentOutput, 0);
 			belt_CIM.set(ControlMode.PercentOutput, 0);
 		}
-		
-		SmartDashboard.putNumber("hopper output",belt_CIM.getMotorOutputPercent());
-		SmartDashboard.putNumber("AA", 555555);
+	*/	
+		SmartDashboard.putNumber("Hopper Output",belt_CIM.getMotorOutputPercent());
+		SmartDashboard.putNumber("Shooter Target", percent);
 		leftMain.set(ControlMode.PercentOutput, percent);
 		rightMain.set(ControlMode.PercentOutput, percent);
 		

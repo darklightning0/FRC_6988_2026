@@ -5,6 +5,8 @@ import static frc.robot.Constants.ControllerConstants.driverJoystickDef;
 import static frc.robot.Constants.ControllerConstants.operatorJoystick;
 import static frc.robot.Constants.ControllerConstants.operatorJoystickDef;
 
+import com.revrobotics.jni.RevJNIWrapper;
+
 import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
 import frc.robot.Constants.SubsystemConstants.RemoteOperatorButtons;
@@ -53,8 +55,19 @@ public class Remote {
     public static enum ShooterMode {
 
         Idle,
+        Rev,
         Shoot,
         Reverse,
+
+    }
+
+    public static enum HoodMode {
+
+        ManualUp,
+        ManualDown,
+        AutoAim,
+        Hold,
+        ReturnToZero
 
     }
     public InterpolatingDoubleTreeMap distanceToPercent = new InterpolatingDoubleTreeMap();
@@ -82,19 +95,22 @@ public class Remote {
     // Here we will be creating private constructor
     // restricted to this class itself
     public Remote() {
-    distanceToPercent.put(1.0, 0.35); // distance and hood angle ticks
-    distanceToPercent.put(2.0, 0.50);
-    distanceToPercent.put(3.0, 0.65);
 
         tyToHoodTicks.put(-15.0, 18000.0);
         tyToHoodTicks.put(0.0, 10000.0);
         tyToHoodTicks.put(15.0, 2000.0);
+
+        tyToShooterSpeed.put(-15.0, 0.95);
+        tyToShooterSpeed.put(0.0, 0.6);
+        tyToShooterSpeed.put(-15.0, 0.35);
+
+
     }
 
-    public enum HoodMode {ManualUp, ManualDown, AutoAim, ReturnToZero}
-    public HoodMode hood_mode = HoodMode.ReturnToZero;
+    public HoodMode hood_mode = HoodMode.Hold;
 
     public InterpolatingDoubleTreeMap tyToHoodTicks = new InterpolatingDoubleTreeMap();
+    public InterpolatingDoubleTreeMap tyToShooterSpeed = new InterpolatingDoubleTreeMap();
 
 
     public IntakeArmMode getIntakeArmMode() {
@@ -154,33 +170,6 @@ public class Remote {
         return elevator_manualHome;
     }
 
-    // pos. direction: 0 ~ 1
-    // neg. direction: 0 ~ -1
-    /*
-     * private static double getBoosterValue() {
-     * if (!driverJoystickDef.isConnected()) return 0;
-     * double value = (1 -
-     * Constants.ControllerConstants.driverJoystick.getRawAxis(3))/2;
-     * if (value != 0) return getBoosterDirectionInternal() ? value : -value;
-     * else return getBoosterDirectionInternal() ? 0.01 : -0.01;
-     * }
-     * 
-     * public static double getDriverBoosterValue() {
-     * return driverJoystickDef.isConnected() ? getBoosterValue() : 0.;
-     * }
-     * 
-     * 
-     * // true: default (positive)
-     * // false: reversed (negative)
-     * private static boolean getBoosterDirectionInternal() {
-     * return
-     * !Constants.ControllerConstants.driverJoystickDef.getRawButton(Constants.
-     * SubsystemConstants.RemoteButtons.ShooterRevert);
-     * }
-     * 
-     */
-
-    // private static boolean takeoverEnabled = false;
 
     double getDriveFactor() {
         if (drive_slow) return 0.2;
@@ -291,23 +280,7 @@ public class Remote {
                 intake_mode = IntakeMode.Idle;
             }
         }
-/* 
-        if (operatorJoystickDef.isConnected()) {
-            if (operatorJoystickDef.getLeftBumperButtonPressed()== true){
-                hood.adjustTicks(0.05);
-            } else if (operatorJoystickDef.getRightBumperButtonPressed()==true) {
-                hood.adjustTicks(-0.05);
-            } 
-        }
-*/
-        // Shooter
-         if (operatorJoystickDef.getLeftY()> 0.1) {
-            shooter_mode = ShooterMode.Reverse;
-        } else if (operatorJoystickDef.getLeftY()<-0.1) {
-            shooter_mode = ShooterMode.Shoot;
-        } else {
-            shooter_mode = ShooterMode.Idle;
-        } 
+
 
         // Climb
         if(driverJoystickDef.getRightBumperButton() == true){
@@ -321,7 +294,6 @@ public class Remote {
         // Hood
         if (operatorJoystickDef.getYButton()){
             hood_mode = HoodMode.AutoAim;
-            shooter_mode = ShooterMode.Shoot;
         }else if (operatorJoystickDef.getRightBumperButton()){
             hood_mode = HoodMode.ManualUp;
             shooter_mode = ShooterMode.Idle;
@@ -329,7 +301,7 @@ public class Remote {
             hood_mode = HoodMode.ManualDown;
             shooter_mode = ShooterMode.Idle;
         }else{
-            hood_mode = HoodMode.ReturnToZero;
+            hood_mode = HoodMode.Hold;
             if (operatorJoystickDef.getLeftY()> 0.1) {
                 shooter_mode = ShooterMode.Reverse;
             } else if (operatorJoystickDef.getLeftY()<-0.1) {

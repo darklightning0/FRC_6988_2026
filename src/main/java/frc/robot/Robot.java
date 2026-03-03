@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.Remote;
 import frc.robot.subsystems.Remote.ClimbMode;
 import frc.robot.subsystems.Remote.HoodMode;
 import frc.robot.subsystems.Remote.IntakeArmMode;
@@ -222,14 +223,30 @@ public class Robot extends TimedRobot {
       if(LimelightHelpers.getTV("limelight")){
         double requiredTicks = m_robotContainer.m_remote.tyToHoodTicks.get(currentTY);
         m_robotContainer.m_hood.setTargetTicks(requiredTicks);
+
+        double requireSpeed = m_robotContainer.m_remote.tyToShooterSpeed.get(currentTY);
+        m_robotContainer.m_shooter.setCustomSpeed(requireSpeed);
+
+        boolean isHoodReady = m_robotContainer.m_hood.atTarget();
+        boolean isRobotAimed = Math.abs(LimelightHelpers.getTX("limelight")) < 2.0;
+
+        if (isHoodReady && isRobotAimed){
+          m_robotContainer.m_shooter.mainloop(Remote.ShooterMode.Shoot);
+        } else {
+          m_robotContainer.m_shooter.mainloop(Remote.ShooterMode.Rev);
+        }
       }
-    } else if(m_robotContainer.m_remote.hood_mode == HoodMode.ManualUp){
+    } else { 
+    if(m_robotContainer.m_remote.hood_mode == HoodMode.ManualUp){
       m_robotContainer.m_hood.adjustTicks(300);
     } else if(m_robotContainer.m_remote.hood_mode == HoodMode.ManualDown){
       m_robotContainer.m_hood.adjustTicks(-300);
     } else if(m_robotContainer.m_remote.hood_mode == HoodMode.ReturnToZero){
       m_robotContainer.m_hood.adjustTicks(0);
     }
+    // Shooter
+		m_robotContainer.m_shooter.mainloop(m_robotContainer.m_remote.getShooterMode());
+  }
     m_robotContainer.m_hood.mainloop();
 
 		// Outer Elevator
@@ -243,12 +260,11 @@ public class Robot extends TimedRobot {
 		// m_robotContainer.m_innerElevator.setTargetPos(0.40);
 		m_robotContainer.m_innerElevator.mainloop(innerElevatorTarget, m_robotContainer.m_remote.getHomeButton());
 
-		// Shooter
-		m_robotContainer.m_shooter.mainloop(shooterMode);
+
     //Intake
     m_robotContainer.m_intake.mainloop(intakeMode);
     m_robotContainer.m_climb.mainloop(climbMode);
-    m_robotContainer.m_hood.mainloop();
+
 		// Intake wheel
 		//m_robotContainer.m_intakeWheels.mainloop(intakeWheelMode);
 
