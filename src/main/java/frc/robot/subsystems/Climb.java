@@ -17,7 +17,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Constants.SubsystemConstants;
-import frc.robot.subsystems.Remote.ShooterMode;
+import frc.robot.subsystems.Remote.ClimbMode;;
 
 
 public class Climb {
@@ -49,15 +49,28 @@ public class Climb {
     }
 
 
-	
+	double modeToPercent(ClimbMode mode) {
+		switch (mode) {
+			case Climb:
+				return SubsystemConstants.Output.climbClimb;
+			case Reverse:
+				return SubsystemConstants.Output.climbReverse;
+			case Idle:  
+			default:
+				return 0.0;
+        }
+    }
 
 	//Get the current motor output percent for telemetry
 	public double getMotorOutputPercent() {
 		return percent;
 	}
 
-	public void mainloop(ShooterMode shooterMode) {
-		
+	public void mainloop(ClimbMode climbMode) {
+
+		percent = modeToPercent(climbMode);
+        leader_climb.set(percent);
+        follower_climb.set(percent);
 		
 	}
 

@@ -42,13 +42,14 @@ public class Hood {
     public double getTicks() {
         return hoodEncoder.get();
     }
-
+/* 
     public void adjustTicks(double deltaFactor) {
         targetTicks =+ MAX_TICKS*deltaFactor;
 
         targetTicks = Math.max(MIN_TICKS,
                       Math.min(MAX_TICKS, targetTicks));
     }
+                      */
 
 
     public void setTargetTicks(double ticks) {

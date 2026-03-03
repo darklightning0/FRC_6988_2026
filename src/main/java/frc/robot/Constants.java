@@ -50,8 +50,8 @@ public final class Constants {
 		public static class TalonIDs {
 			public static class FX {
 				public static final int Intake_Arm = 24; // Intake arm motor
-				public static final int leader_climb = 0;
-				public static final int follower_climb = 0;  
+				public static final int leader_climb = 23;
+				public static final int follower_climb = 22;  
 
 			}
 
@@ -117,6 +117,10 @@ public final class Constants {
 			// Shooter output
 			public static final double shooterShoot = 1.0;
 			public static final double shooterReverse = -1.0;
+
+			// Climb Output
+			public static final double climbClimb = 1.0;
+			public static final double climbReverse = -0.1;
 		}
 
 		public static class Voltage {

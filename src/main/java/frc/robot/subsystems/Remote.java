@@ -44,6 +44,12 @@ public class Remote {
         Hold,
     }
 
+    public static enum ClimbMode {
+        Idle,
+        Climb,
+        Reverse,
+    }
+
     public static enum ShooterMode {
 
         Idle,
@@ -59,6 +65,7 @@ public class Remote {
     IntakeWheelMode input_wheelIntake = IntakeWheelMode.Idle;
     ShooterMode shooter_mode = ShooterMode.Idle;
     IntakeMode intake_mode = IntakeMode.Idle;
+    ClimbMode climb_mode = ClimbMode.Idle;
     // static UltrasonicSensor ultrasonicSensor = new UltrasonicSensor(0, 0);
     // ElevatorMode input_elevatorMode = ElevatorMode.Idle;
     public double input_innerElevatorTarget = 0;
@@ -90,6 +97,10 @@ public class Remote {
 
     public IntakeMode getIntakeMode(){
         return intake_mode;
+    }
+
+    public ClimbMode getClimbMode(){
+        return climb_mode;
     }
 
     public static double getLeftY(){
@@ -207,16 +218,12 @@ public class Remote {
 
     if (LimelightHelpers.getTV("limelight")==true ){
         RawFiducial[] fiducials = LimelightHelpers.getRawFiducials("limelight");
-   
-        
-    for (RawFiducial fiducial : fiducials){
-        int id = fiducial.id;
-        double distToCamera = fiducial.distToCamera;
-        double distToRobot = fiducial.distToRobot;
-        double ambiguity = fiducial.ambiguity;
+        RawFiducial fiducial = fiducials[0];
+        SmartDashboard.putNumber("TagDist", fiducial.distToCamera);
+    
 
 
-}
+
 
 }
   
@@ -274,7 +281,7 @@ public class Remote {
                 intake_mode = IntakeMode.Idle;
             }
         }
-
+/* 
         if (operatorJoystickDef.isConnected()) {
             if (operatorJoystickDef.getLeftBumperButtonPressed()== true){
                 hood.adjustTicks(0.05);
@@ -282,7 +289,7 @@ public class Remote {
                 hood.adjustTicks(-0.05);
             } 
         }
-
+*/
         // Shooter
          if (operatorJoystickDef.getLeftY()> 0.1) {
             shooter_mode = ShooterMode.Reverse;
@@ -291,6 +298,15 @@ public class Remote {
         } else {
             shooter_mode = ShooterMode.Idle;
         } 
+
+        // Climb
+        if(operatorJoystickDef.getRightBumperButton() == true){
+            climb_mode = ClimbMode.Climb;
+        } else if (operatorJoystickDef.getLeftBumperButton() == true){
+            climb_mode = ClimbMode.Reverse;
+        }else{
+            climb_mode = ClimbMode.Idle;
+        }
 
         // Input -> intake arm command
         if (operatorJoystickDef.isConnected()) {

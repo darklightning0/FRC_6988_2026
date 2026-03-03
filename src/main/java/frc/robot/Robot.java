@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-
+import frc.robot.subsystems.Remote.ClimbMode;
 import frc.robot.subsystems.Remote.IntakeArmMode;
 import frc.robot.subsystems.Remote.IntakeWheelMode;
 import frc.robot.subsystems.Remote.ShooterMode;
@@ -17,6 +17,7 @@ import frc.robot.subsystems.Remote.IntakeMode;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import com.ctre.phoenix.sensors.PigeonIMU;
+import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.hardware.Pigeon2;
 
 // AdvantageScope visualization imports
@@ -45,7 +46,7 @@ public class Robot extends TimedRobot {
 	public void robotInit() {
 		CameraServer.startAutomaticCapture();
     LimelightHelpers.setPipelineIndex("limelight",1);
-    //m_robotContainer.pigeon2.setYaw(0.0);
+    m_robotContainer.pigeon2.setYaw(0.0);
 
     // Initialize Pose Estimator for AdvantageScope
     m_poseEstimator = new SwerveDrivePoseEstimator(
@@ -54,6 +55,9 @@ public class Robot extends TimedRobot {
         m_robotContainer.drivetrain.getState().ModulePositions,
         new Pose2d() // Start at 0,0
     );
+
+    SignalLogger.start();
+    SignalLogger.setPath("/home/lvuser/logs/");
 
     // Put the Field object to SmartDashboard so AdvantageScope can find it
     SmartDashboard.putData("input_field", m_field);
@@ -182,10 +186,13 @@ public class Robot extends TimedRobot {
 		IntakeArmMode intakeArmMode = m_robotContainer.m_remote.getIntakeArmMode();
 		ShooterMode shooterMode = m_robotContainer.m_remote.getShooterMode();
     IntakeMode intakeMode = m_robotContainer.m_remote.getIntakeMode();
+    ClimbMode climbMode = m_robotContainer.m_remote.getClimbMode();
 
 		// 1. Log Mechanism Modes (Strings)
     SmartDashboard.putString("input_intake_mode", intakeMode.toString());
     SmartDashboard.putString("input_shooter_mode", shooterMode.toString());
+    SmartDashboard.putString("input_climb_mode", climbMode.toString());
+
 
     // 2. Log Percent Outputs (Numbers) for AdvantageScope
     SmartDashboard.putNumber("input_intake_percent", m_robotContainer.m_intake.getMotorOutputPercent());
@@ -223,6 +230,7 @@ public class Robot extends TimedRobot {
 		m_robotContainer.m_shooter.mainloop(shooterMode);
     //Intake
     m_robotContainer.m_intake.mainloop(intakeMode);
+    m_robotContainer.m_climb.mainloop(climbMode);
     m_robotContainer.m_hood.mainloop();
 		// Intake wheel
 		//m_robotContainer.m_intakeWheels.mainloop(intakeWheelMode);

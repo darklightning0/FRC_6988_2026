@@ -40,6 +40,7 @@ import frc.robot.subsystems.OuterElevator;
 import frc.robot.subsystems.Remote;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Climb;
 //import frc.robot.subsystems.AlgeaIntake.IntakeArm;
 //import frc.robot.subsystems.AlgeaIntake.IntakeWheels;
 import frc.robot.subsystems.Remote.ShooterMode;
@@ -68,6 +69,7 @@ public class RobotContainer {
     public final Shooter m_shooter = new Shooter();
     public final Intake m_intake = new Intake();
     public final Hood m_hood = new Hood();
+    public final Climb m_climb = new Climb();
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
