@@ -12,8 +12,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.Remote;
 import frc.robot.subsystems.Remote.ClimbMode;
 import frc.robot.subsystems.Remote.HoodMode;
-import frc.robot.subsystems.Remote.IntakeArmMode;
-import frc.robot.subsystems.Remote.IntakeWheelMode;
+
 import frc.robot.subsystems.Remote.ShooterMode;
 import frc.robot.subsystems.Remote.IntakeMode;
 
@@ -130,11 +129,9 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     m_robotContainer.pigeon2.setYaw(0);
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    
 
-
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.schedule();
-    }
+  
 
     //autoInit = getTime();
 

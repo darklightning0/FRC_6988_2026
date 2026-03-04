@@ -78,17 +78,7 @@ public class RobotContainer {
 
     public RobotContainer() {
         
-       /*  NamedCommands.registerCommand("ShooterAuto", Commands.run(() -> {
-             double rotRate = 0;
-                if(LimelightHelpers.getTV("limelight")){
-                    rotRate = -LimelightHelpers.getTX("limelight") * 0.03;
-                }
-
-                drive.withVelocityX( 0)
-                .withVelocityY(0)
-                .withRotationalRate(rotRate * MaxAngularRate);
-        }));
-        */
+        
 
         NamedCommands.registerCommand("ShooterReverse", Commands.runOnce(() -> {
             autoShooterMode = ShooterMode.Idle;
@@ -106,7 +96,7 @@ public class RobotContainer {
         }));
         
 
-        autoChooser = AutoBuilder.buildAutoChooser("intakeTest");
+        autoChooser = AutoBuilder.buildAutoChooser("onlyDrive");
         SmartDashboard.putData("Auto Mode", autoChooser);
 
         configureBindings();
@@ -171,21 +161,7 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        /*final var idle = new SwerveRequest.Idle();
-        return Commands.sequence(
-            // Reset our field centric heading to match the robot
-            // facing away from our alliance station wall (0 deg).
-            drivetrain.runOnce(() -> drivetrain.seedFieldCentric(Rotation2d.kZero)),
-            // Then slowly drive forward (away from us) for 5 seconds.
-            drivetrain.applyRequest(() ->
-                drive.withVelocityX(0.5)
-                    .withVelocityY(0)
-                    .withRotationalRate(0)
-            )
-            .withTimeout(5.0),
-            // Finally idle for the rest of auton
-            drivetrain.applyRequest(() -> idle)
-        );*/
+      
         return autoChooser.getSelected();
     }
 }

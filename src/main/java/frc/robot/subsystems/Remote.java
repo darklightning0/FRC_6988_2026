@@ -27,20 +27,6 @@ public class Remote {
         Reverse,
         Idle,
     }
-    // Intake kol hareketleri
-    public static enum IntakeArmMode {
-        Idle,
-        Up,
-        Down,
-    }
-
-    // Intake tekerlek hareket
-    public static enum IntakeWheelMode {
-        Idle,
-        In,
-        Shoot,
-        Hold,
-    }
 
     public static enum ClimbMode {
         Idle,
@@ -70,8 +56,6 @@ public class Remote {
     private double limelightDist;
     private RawFiducial[] limelightData;
 
-    IntakeArmMode input_armIntake = IntakeArmMode.Idle;
-    IntakeWheelMode input_wheelIntake = IntakeWheelMode.Idle;
     ShooterMode shooter_mode = ShooterMode.Idle;
     IntakeMode intake_mode = IntakeMode.Idle;
     ClimbMode climb_mode = ClimbMode.Idle;
@@ -109,10 +93,6 @@ public class Remote {
     public InterpolatingDoubleTreeMap tyToShooterSpeed = new InterpolatingDoubleTreeMap();
 
 
-    public IntakeArmMode getIntakeArmMode() {
-        return input_armIntake;
-    }
-
     public ShooterMode getShooterMode() {
         return shooter_mode;
     }
@@ -137,10 +117,7 @@ public class Remote {
         return operatorJoystickDef.getLeftTriggerAxis();
     }
 
-    public IntakeWheelMode getIntakeWheelMode() {
-        return input_wheelIntake;
-    }
-
+  
     public double getInnerElevatorTarget() {
         return input_innerElevatorTarget;
     }
@@ -310,29 +287,7 @@ public class Remote {
             } 
         }
 
-        // Input -> intake arm command
-        if (operatorJoystickDef.isConnected()) {
-            if (operatorJoystickDef.getPOV() == 0) {
-                input_armIntake = IntakeArmMode.Up;
-            } else if (operatorJoystickDef.getPOV() == 180) {
-                input_armIntake = IntakeArmMode.Down;
-            } else {
-                input_armIntake = IntakeArmMode.Idle;
-            }
-        }
-        // input -> intake wheel command
-        if (operatorJoystickDef.isConnected()) {
-            if (operatorJoystickDef.getPOV() == 270 && !operatorJoystickDef.getLeftBumperButton()) {
-                input_wheelIntake = IntakeWheelMode.In;
-            } else if (operatorJoystickDef.getPOV() == 90) {
-                input_wheelIntake = IntakeWheelMode.Shoot;}
-            else if(operatorJoystickDef.getPOV()==270 && operatorJoystickDef.getLeftBumperButton()){
-                input_wheelIntake= IntakeWheelMode.Hold;
-            
-            } else {
-                input_wheelIntake = IntakeWheelMode.Idle;
-            }
-        }
+
 
     }
 }
