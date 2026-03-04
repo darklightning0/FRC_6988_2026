@@ -212,8 +212,10 @@ public class Remote {
     
 
     if (LimelightHelpers.getTV("limelight")==true ){
+       
         RawFiducial[] fiducials = LimelightHelpers.getRawFiducials("limelight");
         if(fiducials != null && fiducials.length > 0){
+         SmartDashboard.putNumber("efekapakulak", LimelightHelpers.getFiducialID("limelight"));
         RawFiducial fiducial = fiducials[0];
         SmartDashboard.putNumber("TagDist", fiducial.distToCamera);
         }

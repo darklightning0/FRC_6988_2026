@@ -158,8 +158,10 @@ public class Robot extends TimedRobot {
     //m_robotContainer.m_intakeArm.mainloop(intakeArmMode);
 
     ShooterMode autoShooterMode=m_robotContainer.getAutoShooterMode();
+    IntakeMode autoIntakeMode = m_robotContainer.getAutoIntakeMode();
     
     m_robotContainer.m_shooter.mainloop(autoShooterMode);
+    m_robotContainer.m_intake.mainloop(autoIntakeMode);
     
   }
 
@@ -217,7 +219,7 @@ public class Robot extends TimedRobot {
             SmartDashboard.putNumber("Vision Calculated Speed", requireSpeed);
 
             boolean isHoodReady = m_robotContainer.m_hood.atTarget();
-            boolean isRobotAimed = Math.abs(LimelightHelpers.getTX("limelight")) < 5.0;
+            boolean isRobotAimed = Math.abs(LimelightHelpers.getTX("limelight")) < 3.0;
 
             SmartDashboard.putBoolean("isRobotAimed", isRobotAimed);
             SmartDashboard.putBoolean("isHoodReady", isHoodReady);

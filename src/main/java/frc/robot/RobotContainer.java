@@ -41,13 +41,14 @@ import frc.robot.subsystems.Remote;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Climb;
+import frc.robot.subsystems.Remote.IntakeMode;
 //import frc.robot.subsystems.AlgeaIntake.IntakeArm;
 //import frc.robot.subsystems.AlgeaIntake.IntakeWheels;
 import frc.robot.subsystems.Remote.ShooterMode;
 
 public class RobotContainer {
     private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
-    private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
+    private double MaxAngularRate = RotationsPerSecond.of(0.35).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
     /* Setting up bindings for necessary control of the swerve drive platform */
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
@@ -73,16 +74,39 @@ public class RobotContainer {
     private final SendableChooser<Command> autoChooser;
 
     private ShooterMode autoShooterMode= ShooterMode.Idle;
+    private IntakeMode autoIntakeMode = IntakeMode.Idle;
 
     public RobotContainer() {
-        NamedCommands.registerCommand("ShooterForward", Commands.runOnce(() -> {
-            autoShooterMode = ShooterMode.Shoot;
+        
+       /*  NamedCommands.registerCommand("ShooterAuto", Commands.run(() -> {
+             double rotRate = 0;
+                if(LimelightHelpers.getTV("limelight")){
+                    rotRate = -LimelightHelpers.getTX("limelight") * 0.03;
+                }
+
+                drive.withVelocityX( 0)
+                .withVelocityY(0)
+                .withRotationalRate(rotRate * MaxAngularRate);
         }));
+        */
+
         NamedCommands.registerCommand("ShooterReverse", Commands.runOnce(() -> {
             autoShooterMode = ShooterMode.Idle;
         }));
 
-        autoChooser = AutoBuilder.buildAutoChooser("Taxi_Red");
+             NamedCommands.registerCommand("IntakeStart", Commands.runOnce(() -> {
+            autoIntakeMode= IntakeMode.Intake;
+        }));
+        
+             NamedCommands.registerCommand("IntakeStop", Commands.runOnce(() -> {
+            autoIntakeMode= IntakeMode.Idle ;
+        }));
+          NamedCommands.registerCommand("ClimbAuto", Commands.runOnce(() -> {
+        
+        }));
+        
+
+        autoChooser = AutoBuilder.buildAutoChooser("intakeTest");
         SmartDashboard.putData("Auto Mode", autoChooser);
 
         configureBindings();
@@ -90,6 +114,9 @@ public class RobotContainer {
 
     public ShooterMode getAutoShooterMode(){
         return autoShooterMode;
+    }
+     public IntakeMode getAutoIntakeMode(){
+        return autoIntakeMode;
     }
 
     private void configureBindings() {
@@ -99,8 +126,8 @@ public class RobotContainer {
             // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() ->
                 drive.withVelocityX(driverJoystick.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-                    .withVelocityY(driverJoystick.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-                    .withRotationalRate(-driverJoystick.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
+                    .withVelocityY(-driverJoystick.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+                    .withRotationalRate(driverJoystick.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
             )
         );
 
@@ -128,6 +155,7 @@ public class RobotContainer {
 
         drivetrain.registerTelemetry(logger::telemeterize);
 
+        
         operatorJoystick.y().whileTrue(
             drivetrain.applyRequest(() -> {
                 double rotRate = 0;
@@ -137,7 +165,7 @@ public class RobotContainer {
 
                 return drive.withVelocityX(-driverJoystick.getLeftY() * MaxSpeed)
                 .withVelocityY(-driverJoystick.getLeftX() * MaxSpeed)
-                .withRotationalRate(rotRate * MaxAngularRate);
+                 .withRotationalRate(rotRate * MaxAngularRate*driverJoystick.getRightX());
             })
         );
     }

@@ -7,6 +7,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import frc.robot.Constants;
@@ -14,11 +15,11 @@ import frc.robot.Constants;
 public class Hood {
 
     private final TalonSRX hoodAdjuster =
-        new TalonSRX(Constants.SubsystemConstants.TalonIDs.SRX.hoodMotor);
+        new TalonSRX(999);
 
     private final Encoder hoodEncoder =
         new Encoder(
-            3,4
+            0,1,false,EncodingType.k4X
         );
 
 
@@ -73,7 +74,7 @@ public class Hood {
             hoodPID.calculate(currentTicks, targetTicks);
 
         // Clamp motor power
-        output = MathUtil.clamp(output, -0.1, 0.1);
+        output = MathUtil.clamp(output, 0, 0);
 
         hoodAdjuster.set(ControlMode.PercentOutput, output);
 
