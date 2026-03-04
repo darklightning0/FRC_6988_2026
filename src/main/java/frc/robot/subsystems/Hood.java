@@ -27,7 +27,7 @@ public class Hood {
 
 
     private final PIDController hoodPID =
-        new PIDController(0.002, 0.0, 0.0);
+        new PIDController(0.0004, 0.0, 0.0);
 
     private double targetTicks = 0.0;
 
@@ -47,7 +47,9 @@ public class Hood {
         setTargetTicks(targetTicks+delta);
     }
                       
-
+    public void setManualPower(double power){
+        hoodAdjuster.set(ControlMode.PercentOutput, power);
+    }
 
     public void setTargetTicks(double ticks) {
         targetTicks = MathUtil.clamp(ticks, MIN_TICKS, MAX_TICKS);
@@ -71,7 +73,7 @@ public class Hood {
             hoodPID.calculate(currentTicks, targetTicks);
 
         // Clamp motor power
-        output = MathUtil.clamp(output, -0.4, 0.4);
+        output = MathUtil.clamp(output, -0.1, 0.1);
 
         hoodAdjuster.set(ControlMode.PercentOutput, output);
 

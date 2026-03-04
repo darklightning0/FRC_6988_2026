@@ -217,7 +217,7 @@ public class Robot extends TimedRobot {
             SmartDashboard.putNumber("Vision Calculated Speed", requireSpeed);
 
             boolean isHoodReady = m_robotContainer.m_hood.atTarget();
-            boolean isRobotAimed = Math.abs(LimelightHelpers.getTX("limelight")) < 2.0;
+            boolean isRobotAimed = Math.abs(LimelightHelpers.getTX("limelight")) < 5.0;
 
             SmartDashboard.putBoolean("isRobotAimed", isRobotAimed);
             SmartDashboard.putBoolean("isHoodReady", isHoodReady);
@@ -236,11 +236,14 @@ public class Robot extends TimedRobot {
         // MANUAL MODES (Correctly placed outside AutoAim!)
         // ==========================================
         if (m_robotContainer.m_remote.hood_mode == HoodMode.ManualUp) {
-            m_robotContainer.m_hood.adjustTicks(300);
+            //m_robotContainer.m_hood.adjustTicks(300);
+            m_robotContainer.m_hood.setManualPower(0.1);
         } else if (m_robotContainer.m_remote.hood_mode == HoodMode.ManualDown) {
-            m_robotContainer.m_hood.adjustTicks(-300);
+            //m_robotContainer.m_hood.adjustTicks(-300);
+            m_robotContainer.m_hood.setManualPower(-0.1);
         } else if (m_robotContainer.m_remote.hood_mode == HoodMode.ReturnToZero) {
-            m_robotContainer.m_hood.setTargetTicks(0);
+            //m_robotContainer.m_hood.setTargetTicks(0);
+            m_robotContainer.m_hood.setManualPower(0.0);
         }
         // Run the manual shooter controls
         m_robotContainer.m_shooter.mainloop(m_robotContainer.m_remote.getShooterMode());
