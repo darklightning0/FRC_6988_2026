@@ -26,7 +26,7 @@ public class Shooter {
 		
 		belt_CIM.setInverted(true);
 	}
-	
+/* 
 	double modeToPercent(ShooterMode mode) {
 		switch (mode) {
 			case Shoot:
@@ -38,7 +38,7 @@ public class Shooter {
 				return 0.0;
 		}
 	}
-
+*/
 	public void setCustomSpeed(double speed){
 		this.custom_speed = speed;
 	}

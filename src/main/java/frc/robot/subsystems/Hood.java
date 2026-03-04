@@ -18,7 +18,7 @@ public class Hood {
 
     private final Encoder hoodEncoder =
         new Encoder(
-            0,1
+            3,4
         );
 
 
