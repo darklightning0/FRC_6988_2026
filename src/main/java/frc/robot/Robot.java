@@ -179,10 +179,6 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     m_robotContainer.m_remote.mainloop();
-		double innerElevatorTarget = m_robotContainer.m_remote.getInnerElevatorTarget();
-		double outerElevatorTarget = m_robotContainer.m_remote.getOuterElevatorTarget();
-		IntakeWheelMode intakeWheelMode = m_robotContainer.m_remote.getIntakeWheelMode();
-		IntakeArmMode intakeArmMode = m_robotContainer.m_remote.getIntakeArmMode();
 		ShooterMode shooterMode = m_robotContainer.m_remote.getShooterMode();
     IntakeMode intakeMode = m_robotContainer.m_remote.getIntakeMode();
     ClimbMode climbMode = m_robotContainer.m_remote.getClimbMode();
@@ -201,51 +197,46 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("input_gyro_degrees", m_robotContainer.pigeon2.getYaw());
 
 
+double currentTY = LimelightHelpers.getTY("limelight");
 
-		// Check ultrasonic sensor
-		// m_robotContainer.m_ultrasonicSensor.measureDistance();
-		// double ultrasonicDistance =
-		// m_robotContainer.m_ultrasonicSensor.getDistanceCm();
-		// boolean objectSeen = ultrasonicDistance <
-		// Constants.SubsystemConstants.Other.ULTRASONIC_DETECTION_THRESHOLD_CM;
+    if (m_robotContainer.m_remote.hood_mode == HoodMode.AutoAim) {
+        if (LimelightHelpers.getTV("limelight")) {
+            double requiredTicks = m_robotContainer.m_remote.tyToHoodTicks.get(currentTY);
+            m_robotContainer.m_hood.setTargetTicks(requiredTicks);
 
-		// Inner Elevator PID Tuning
-		// if (driverJoystickDef.getYButton()) {
-		// m_robotContainer.m_innerElevator.config();
-		// }
+            double requireSpeed = m_robotContainer.m_remote.tyToShooterSpeed.get(currentTY);
+            m_robotContainer.m_shooter.setCustomSpeed(requireSpeed);
 
-    double currentTY = LimelightHelpers.getTY("limelight");
+            boolean isHoodReady = m_robotContainer.m_hood.atTarget();
+            boolean isRobotAimed = Math.abs(LimelightHelpers.getTX("limelight")) < 2.0;
 
-    if(m_robotContainer.m_remote.hood_mode == HoodMode.AutoAim){
-      if(LimelightHelpers.getTV("limelight")){
-        double requiredTicks = m_robotContainer.m_remote.tyToHoodTicks.get(currentTY);
-        m_robotContainer.m_hood.setTargetTicks(requiredTicks);
-
-        double requireSpeed = m_robotContainer.m_remote.tyToShooterSpeed.get(currentTY);
-        m_robotContainer.m_shooter.setCustomSpeed(requireSpeed);
-
-        boolean isHoodReady = m_robotContainer.m_hood.atTarget();
-        boolean isRobotAimed = Math.abs(LimelightHelpers.getTX("limelight")) < 2.0;
-
-        if (isHoodReady && isRobotAimed){
-          m_robotContainer.m_shooter.mainloop(Remote.ShooterMode.Shoot);
+            if (isHoodReady && isRobotAimed) {
+                m_robotContainer.m_shooter.mainloop(Remote.ShooterMode.Shoot);
+            } else {
+                m_robotContainer.m_shooter.mainloop(Remote.ShooterMode.Rev);
+            }
         } else {
-          m_robotContainer.m_shooter.mainloop(Remote.ShooterMode.Rev);
+            // If we can't see the target but are holding Y, just rev safely
+            m_robotContainer.m_shooter.mainloop(Remote.ShooterMode.Rev);
         }
-      }
-     else { 
-    if(m_robotContainer.m_remote.hood_mode == HoodMode.ManualUp){
-      m_robotContainer.m_hood.adjustTicks(300);
-    } else if(m_robotContainer.m_remote.hood_mode == HoodMode.ManualDown){
-      m_robotContainer.m_hood.adjustTicks(-300);
-    } else if(m_robotContainer.m_remote.hood_mode == HoodMode.ReturnToZero){
-      m_robotContainer.m_hood.setTargetTicks(0);
+    } else { 
+        // ==========================================
+        // MANUAL MODES (Correctly placed outside AutoAim!)
+        // ==========================================
+        if (m_robotContainer.m_remote.hood_mode == HoodMode.ManualUp) {
+            m_robotContainer.m_hood.adjustTicks(300);
+        } else if (m_robotContainer.m_remote.hood_mode == HoodMode.ManualDown) {
+            m_robotContainer.m_hood.adjustTicks(-300);
+        } else if (m_robotContainer.m_remote.hood_mode == HoodMode.ReturnToZero) {
+            m_robotContainer.m_hood.setTargetTicks(0);
+        }
+        // Run the manual shooter controls
+        m_robotContainer.m_shooter.mainloop(m_robotContainer.m_remote.getShooterMode());
     }
-    // Shooter
-		m_robotContainer.m_shooter.mainloop(m_robotContainer.m_remote.getShooterMode());
-  }
+
+    // ALWAYS run the hood mainloop regardless of what mode we are in
     m_robotContainer.m_hood.mainloop();
-    }
+    
 
     //Intake
     m_robotContainer.m_intake.mainloop(intakeMode);
