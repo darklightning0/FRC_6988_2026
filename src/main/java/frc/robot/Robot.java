@@ -197,7 +197,13 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("input_gyro_degrees", m_robotContainer.pigeon2.getYaw());
 
 
-double currentTY = LimelightHelpers.getTY("limelight");
+    double currentTY = LimelightHelpers.getTY("limelight");
+    boolean hasTarget = LimelightHelpers.getTV("limelight");
+
+            SmartDashboard.putBoolean("Vision Has Target", hasTarget);
+            SmartDashboard.putNumber("Vision Target TY", currentTY);
+            SmartDashboard.putNumber("Vision Target TX", LimelightHelpers.getTX("limelight"));
+            SmartDashboard.putString("Vision Hood State",  m_robotContainer.m_remote.hood_mode.toString());
 
     if (m_robotContainer.m_remote.hood_mode == HoodMode.AutoAim) {
         if (LimelightHelpers.getTV("limelight")) {
@@ -207,10 +213,16 @@ double currentTY = LimelightHelpers.getTY("limelight");
             double requireSpeed = m_robotContainer.m_remote.tyToShooterSpeed.get(currentTY);
             m_robotContainer.m_shooter.setCustomSpeed(requireSpeed);
 
+            SmartDashboard.putNumber("Vision Calculated Ticks", requiredTicks);
+            SmartDashboard.putNumber("Vision Calculated Speed", requireSpeed);
+
             boolean isHoodReady = m_robotContainer.m_hood.atTarget();
             boolean isRobotAimed = Math.abs(LimelightHelpers.getTX("limelight")) < 2.0;
 
-            if (isHoodReady && isRobotAimed) {
+            SmartDashboard.putBoolean("isRobotAimed", isRobotAimed);
+            SmartDashboard.putBoolean("isHoodReady", isHoodReady);
+
+            if (isRobotAimed) {
                 m_robotContainer.m_shooter.mainloop(Remote.ShooterMode.Shoot);
             } else {
                 m_robotContainer.m_shooter.mainloop(Remote.ShooterMode.Rev);

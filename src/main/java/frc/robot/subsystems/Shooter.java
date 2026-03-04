@@ -24,7 +24,8 @@ public class Shooter {
 
 	public Shooter() {
 		
-		belt_CIM.setInverted(true);
+		belt_CIM.setInverted(false);
+		hopperRedline.setInverted(true);
 	}
 /* 
 	double modeToPercent(ShooterMode mode) {
