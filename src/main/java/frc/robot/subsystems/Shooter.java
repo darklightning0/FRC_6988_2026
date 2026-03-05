@@ -53,10 +53,8 @@ public class Shooter {
 
 		double flywheelSpeed = 0.0;
 		
-        // 1. Define the manual speed from the joystick (0.0 to 1.0)
-        double manualRevSpeed = Math.abs(operatorJoystick.getLeftY());
-
-		// 2. Override the joystick speed if a preset button is held
+        // 1. Check preset buttons FIRST (highest priority for manual control)
+        double manualRevSpeed;
         if (operatorJoystick.y().getAsBoolean()) {
             manualRevSpeed = 1.0;  // Y Button = 100% Speed
         } else if (operatorJoystick.b().getAsBoolean()) {
@@ -65,12 +63,16 @@ public class Shooter {
             manualRevSpeed = 0.6;  // A Button = 60% Speed
         } else if (operatorJoystick.x().getAsBoolean()) {
             manualRevSpeed = 0.4;  // X Button = 40% Speed
+        } else {
+            // 2. Fall back to joystick axis if no preset is held
+            manualRevSpeed = Math.abs(operatorJoystick.getLeftY());
         }
 
+		// 3. Limelight auto-aim speed overrides manual only when active
 		if(this.custom_speed > 0){
 			flywheelSpeed = this.custom_speed; // Use Auto-Aim Limelight speed
 		} else {
-			flywheelSpeed = manualRevSpeed;    // Use Manual Joystick speed
+			flywheelSpeed = manualRevSpeed;    // Use Manual Joystick/Preset speed
 		}
 
 		switch(shooterMode){
