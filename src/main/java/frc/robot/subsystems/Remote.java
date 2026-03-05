@@ -201,18 +201,18 @@ public class Remote {
 
 
         // Climb
-        if(driverJoystickDef.getPOV() == 0){
+        if(driverJoystickDef.getPOV() == 180){
             climb_mode = ClimbMode.Climb;
-        } else if (operatorJoystickDef.getPOV() == 180){
+        } else if (driverJoystickDef.getPOV() == 0){
             climb_mode = ClimbMode.Reverse;
         }else{
             climb_mode = ClimbMode.Idle;
         }
 
        // Hood
-        if(operatorJoystickDef.getPOV() == 0){
+        if(operatorJoystickDef.getPOV() == 180){
             hood_mode = HoodMode.MoveUp;
-        } else if (operatorJoystickDef.getPOV() == 180){
+        } else if (operatorJoystickDef.getPOV() == 0){
             hood_mode = HoodMode.MoveDown;
         }else{
             hood_mode = HoodMode.Idle;
