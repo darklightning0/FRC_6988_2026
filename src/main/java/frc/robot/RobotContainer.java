@@ -49,7 +49,7 @@ public class RobotContainer {
     private double MaxAngularRate = RotationsPerSecond.of(0.35).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
     /* Setting up bindings for necessary control of the swerve drive platform */
-    private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
+    private final SwerveRequest.RobotCentric drive = new SwerveRequest.RobotCentric()
             .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
@@ -126,9 +126,9 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() ->
-                drive.withVelocityX(driverJoystick.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
+                drive.withVelocityX(-driverJoystick.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
                     .withVelocityY(-driverJoystick.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-                    .withRotationalRate(driverJoystick.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
+                    .withRotationalRate(-driverJoystick.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
             )
         );
 
@@ -157,8 +157,10 @@ public class RobotContainer {
         drivetrain.registerTelemetry(logger::telemeterize);
 
         
-        operatorJoystick.y().whileTrue(
-            drivetrain.applyRequest(() -> {
+        driverJoystick.y().whileTrue(
+            Commands.runOnce(()->LimelightHelpers.setPipelineIndex("limelight", 1))
+            .andThen(
+                drivetrain.applyRequest(() -> {
                 double rotRate = 0;
                 if(LimelightHelpers.getTV("limelight")){
                     rotRate = -LimelightHelpers.getTX("limelight") * 0.03;
@@ -166,8 +168,10 @@ public class RobotContainer {
 
                 return drive.withVelocityX(-driverJoystick.getLeftY() * MaxSpeed)
                 .withVelocityY(-driverJoystick.getLeftX() * MaxSpeed)
-                 .withRotationalRate(rotRate * MaxAngularRate*driverJoystick.getRightX());
+                 .withRotationalRate(rotRate * MaxAngularRate);
             })
+            )
+        ).onFalse(Commands.runOnce(() -> LimelightHelpers.setPipelineIndex("limelight", 0))
         );
     }
 

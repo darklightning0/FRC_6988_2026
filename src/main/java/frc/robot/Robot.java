@@ -17,6 +17,9 @@ import frc.robot.subsystems.Remote.ShooterMode;
 import frc.robot.subsystems.Remote.IntakeMode;
 
 import edu.wpi.first.cameraserver.CameraServer;
+
+import static frc.robot.Constants.ControllerConstants.driverJoystick;
+
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.ctre.phoenix6.SignalLogger;
 
@@ -201,60 +204,64 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("input_gyro_degrees", m_robotContainer.pigeon2.getYaw());
 
 
-    double currentTY = LimelightHelpers.getTY("limelight");
-    boolean hasTarget = LimelightHelpers.getTV("limelight");
 
-            SmartDashboard.putBoolean("Vision Has Target", hasTarget);
-            SmartDashboard.putNumber("Vision Target TY", currentTY);
-            SmartDashboard.putNumber("Vision Target TX", LimelightHelpers.getTX("limelight"));
 
-    if (m_robotContainer.m_remote.hood_mode == HoodMode.AutoAim) {
+    SmartDashboard.putNumber("Vision Target TX", LimelightHelpers.getTX("limelight"));
+
+    m_robotContainer.m_hood.mainloop(hoodMode);
+
+    // ==========================================
+    // 2. SHOOTER CONTROL (Auto-Interpolation vs Manual)
+    // ==========================================
+    // Check if the operator is holding the Y button to auto-align and shoot
+    if (driverJoystick.y().getAsBoolean()) {
+        
         if (LimelightHelpers.getTV("limelight")) {
-            double requiredTicks = m_robotContainer.m_remote.tyToHoodTicks.get(currentTY);
-            m_robotContainer.m_hood.setTargetTicks(requiredTicks);
+            
+            // 1. Get the ID of the tag we are currently tracking
+            double currentTagID = LimelightHelpers.getFiducialID("limelight");
+            
+            // 2. Check if it's one of the valid Hub/Speaker tags (CHANGE THESE NUMBERS!)
+            boolean isValidTarget = (currentTagID == 8 || currentTagID == 9 || currentTagID == 10 || currentTagID == 11 || currentTagID == 24 || currentTagID == 25 || currentTagID == 26 || currentTagID == 27); 
 
-            double requireSpeed = m_robotContainer.m_remote.tyToShooterSpeed.get(currentTY);
-            m_robotContainer.m_shooter.setCustomSpeed(requireSpeed);
+            if (isValidTarget) {
+                double currentTY = LimelightHelpers.getTY("limelight");
+                
+                // Calculate the required speed using your interpolation map
+                double requiredSpeed = m_robotContainer.m_remote.tyToShooterSpeed.get(currentTY);
+                m_robotContainer.m_shooter.setCustomSpeed(requiredSpeed);
+                SmartDashboard.putNumber("Vision Calculated Speed", requiredSpeed);
 
-            SmartDashboard.putNumber("Vision Calculated Ticks", requiredTicks);
-            SmartDashboard.putNumber("Vision Calculated Speed", requireSpeed);
+                // Check if the drivetrain has finished aligning the robot
+                boolean isRobotAimed = Math.abs(LimelightHelpers.getTX("limelight")) < 3.0;
+                SmartDashboard.putBoolean("isRobotAimed", isRobotAimed);
 
-            boolean isHoodReady = m_robotContainer.m_hood.atTarget();
-            boolean isRobotAimed = Math.abs(LimelightHelpers.getTX("limelight")) < 3.0;
-
-            SmartDashboard.putBoolean("isRobotAimed", isRobotAimed);
-            SmartDashboard.putBoolean("isHoodReady", isHoodReady);
-
-            if (isRobotAimed) {
-                m_robotContainer.m_shooter.mainloop(Remote.ShooterMode.Shoot);
+                if (isRobotAimed) {
+                    // If aligned and valid, fire the note!
+                    m_robotContainer.m_shooter.mainloop(Remote.ShooterMode.Shoot);
+                } else {
+                    // If valid but still turning, just rev
+                    m_robotContainer.m_shooter.mainloop(Remote.ShooterMode.Rev);
+                }
             } else {
+                // If the tag is NOT valid, just rev at a safe speed, DO NOT SHOOT
+                m_robotContainer.m_shooter.setCustomSpeed(0.5);
                 m_robotContainer.m_shooter.mainloop(Remote.ShooterMode.Rev);
             }
+
         } else {
-            // If we can't see the target but are holding Y, just rev safely
+            // If Limelight loses the target, just rev
+            m_robotContainer.m_shooter.setCustomSpeed(0.5);
             m_robotContainer.m_shooter.mainloop(Remote.ShooterMode.Rev);
         }
-    } else { 
-        // ==========================================
-        // MANUAL MODES (Correctly placed outside AutoAim!)
-        // ==========================================
-        if (m_robotContainer.m_remote.hood_mode == HoodMode.ManualUp) {
-            //m_robotContainer.m_hood.adjustTicks(300);
-            m_robotContainer.m_hood.setManualPower(0.1);
-        } else if (m_robotContainer.m_remote.hood_mode == HoodMode.ManualDown) {
-            //m_robotContainer.m_hood.adjustTicks(-300);
-            m_robotContainer.m_hood.setManualPower(-0.1);
-        } else if (m_robotContainer.m_remote.hood_mode == HoodMode.ReturnToZero) {
-            //m_robotContainer.m_hood.setTargetTicks(0);
-            m_robotContainer.m_hood.setManualPower(0.0);
-        }
-        // Run the manual shooter controls
-        m_robotContainer.m_shooter.mainloop(m_robotContainer.m_remote.getShooterMode());
+
+    } else {
+        // If Y is NOT held, use manual joystick controls
+        m_robotContainer.m_shooter.setCustomSpeed(0.0); 
+        m_robotContainer.m_shooter.mainloop(shooterMode);
     }
 
-    // ALWAYS run the hood mainloop regardless of what mode we are in
-    m_robotContainer.m_hood.mainloop();
-    
+
 
     //Intake
     m_robotContainer.m_intake.mainloop(intakeMode);

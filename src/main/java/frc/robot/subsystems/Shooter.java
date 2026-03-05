@@ -53,10 +53,24 @@ public class Shooter {
 
 		double flywheelSpeed = 0.0;
 		
+        // 1. Define the manual speed from the joystick (0.0 to 1.0)
+        double manualRevSpeed = Math.abs(operatorJoystick.getLeftY());
+
+		// 2. Override the joystick speed if a preset button is held
+        if (operatorJoystick.y().getAsBoolean()) {
+            manualRevSpeed = 1.0;  // Y Button = 100% Speed
+        } else if (operatorJoystick.b().getAsBoolean()) {
+            manualRevSpeed = 0.85; // B Button = 85% Speed
+        } else if (operatorJoystick.a().getAsBoolean()) {
+            manualRevSpeed = 0.6;  // A Button = 60% Speed
+        } else if (operatorJoystick.x().getAsBoolean()) {
+            manualRevSpeed = 0.4;  // X Button = 40% Speed
+        }
+
 		if(this.custom_speed > 0){
-			flywheelSpeed = this.custom_speed;
+			flywheelSpeed = this.custom_speed; // Use Auto-Aim Limelight speed
 		} else {
-			flywheelSpeed = Constants.SubsystemConstants.Output.shooterShoot * Math.abs(operatorJoystick.getLeftY());
+			flywheelSpeed = manualRevSpeed;    // Use Manual Joystick speed
 		}
 
 		switch(shooterMode){
@@ -67,15 +81,15 @@ public class Shooter {
 				break;
 
 			case Shoot:
-				this.custom_speed = 1;
-				percent = flywheelSpeed;
+                // No custom_speed override here! It stays at joystick/limelight speed.
+				percent = flywheelSpeed; 
 				hopperRedline.set(ControlMode.PercentOutput, 0.35);
 				belt_CIM.set(ControlMode.PercentOutput, 0.8);
 				break;
 
 			case Reverse:
-				this.custom_speed = 0;
-				percent = Constants.SubsystemConstants.Output.shooterReverse;
+                // Uses the joystick variable to spin everything backwards
+				percent = -manualRevSpeed; 
 				hopperRedline.set(ControlMode.PercentOutput, -0.35);
 				belt_CIM.set(ControlMode.PercentOutput, -0.8);
 				break;
@@ -88,26 +102,11 @@ public class Shooter {
 				this.custom_speed = 0.0;
 				break;
 		}
-/* 
-		if(shooterMode == ShooterMode.Shoot){
-			percent = modeToPercent(shooterMode)*operatorJoystick.getLeftY();
-			hopperRedline.set(ControlMode.PercentOutput, 0.35);
-			belt_CIM.set(ControlMode.PercentOutput, 0.8);
-		} else if(shooterMode == ShooterMode.Reverse){
-			percent = modeToPercent(shooterMode)* -operatorJoystick.getLeftY();
-			hopperRedline.set(ControlMode.PercentOutput, -0.35);
-			belt_CIM.set(ControlMode.PercentOutput, -0.8);
-		} else {
-			percent = modeToPercent(shooterMode);
-			hopperRedline.set(ControlMode.PercentOutput, 0);
-			belt_CIM.set(ControlMode.PercentOutput, 0);
-		}
-	*/	
+		
 		SmartDashboard.putNumber("Hopper Output",belt_CIM.getMotorOutputPercent());
 		SmartDashboard.putNumber("Shooter Target", percent);
 		leftMain.set(ControlMode.PercentOutput, percent);
 		rightMain.set(ControlMode.PercentOutput, percent);
-		
 	}
 
 }
