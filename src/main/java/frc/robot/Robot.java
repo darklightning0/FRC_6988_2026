@@ -129,9 +129,11 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     m_robotContainer.pigeon2.setYaw(0);
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-    
 
-  
+
+    if (m_autonomousCommand != null) {
+      m_autonomousCommand.schedule();
+    } //onemli degil aq bu efe kapukulak
 
     //autoInit = getTime();
 
@@ -155,10 +157,11 @@ public class Robot extends TimedRobot {
     //m_robotContainer.m_intakeArm.mainloop(intakeArmMode);
 
     ShooterMode autoShooterMode=m_robotContainer.getAutoShooterMode();
-    IntakeMode autoIntakeMode = m_robotContainer.getAutoIntakeMode();
+    IntakeMode autoIntakeMode=m_robotContainer.getAutoIntakeMode();
     
     m_robotContainer.m_shooter.mainloop(autoShooterMode);
     m_robotContainer.m_intake.mainloop(autoIntakeMode);
+    
     
   }
 
@@ -171,7 +174,6 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-		m_robotContainer.m_remote.resetTargets();
 
   }
 
@@ -181,16 +183,19 @@ public class Robot extends TimedRobot {
 		ShooterMode shooterMode = m_robotContainer.m_remote.getShooterMode();
     IntakeMode intakeMode = m_robotContainer.m_remote.getIntakeMode();
     ClimbMode climbMode = m_robotContainer.m_remote.getClimbMode();
+    HoodMode hoodMode = m_robotContainer.m_remote.getHoodMode();
 
 		// 1. Log Mechanism Modes (Strings)
     SmartDashboard.putString("input_intake_mode", intakeMode.toString());
     SmartDashboard.putString("input_shooter_mode", shooterMode.toString());
     SmartDashboard.putString("input_climb_mode", climbMode.toString());
+    SmartDashboard.putString("input_hood_mode", hoodMode.toString());
 
 
     // 2. Log Percent Outputs (Numbers) for AdvantageScope
     SmartDashboard.putNumber("input_intake_percent", m_robotContainer.m_intake.getMotorOutputPercent());
     SmartDashboard.putNumber("input_shooter_percent", m_robotContainer.m_shooter.getMotorOutputPercent());
+    SmartDashboard.putNumber("input_hood_percent", m_robotContainer.m_hood.getMotorOutputPercent());
 
     // 3. Log Gyro (Pigeon 2)
     SmartDashboard.putNumber("input_gyro_degrees", m_robotContainer.pigeon2.getYaw());
@@ -202,7 +207,6 @@ public class Robot extends TimedRobot {
             SmartDashboard.putBoolean("Vision Has Target", hasTarget);
             SmartDashboard.putNumber("Vision Target TY", currentTY);
             SmartDashboard.putNumber("Vision Target TX", LimelightHelpers.getTX("limelight"));
-            SmartDashboard.putString("Vision Hood State",  m_robotContainer.m_remote.hood_mode.toString());
 
     if (m_robotContainer.m_remote.hood_mode == HoodMode.AutoAim) {
         if (LimelightHelpers.getTV("limelight")) {

@@ -45,11 +45,9 @@ public class Remote {
 
     public static enum HoodMode {
 
-        ManualUp,
-        ManualDown,
-        AutoAim,
-        Hold,
-        ReturnToZero
+        MoveUp,
+        MoveDown,
+        Idle
 
     }
     public InterpolatingDoubleTreeMap distanceToPercent = new InterpolatingDoubleTreeMap();
@@ -59,26 +57,15 @@ public class Remote {
     ShooterMode shooter_mode = ShooterMode.Idle;
     IntakeMode intake_mode = IntakeMode.Idle;
     ClimbMode climb_mode = ClimbMode.Idle;
-    // static UltrasonicSensor ultrasonicSensor = new UltrasonicSensor(0, 0);
-    // ElevatorMode input_elevatorMode = ElevatorMode.Idle;
-    public double input_innerElevatorTarget = 0;
-    public double input_outerElevatorTarget = 0;
-    boolean elevator_manual = false;
-
-    boolean elevator_manualHome = false;
-    boolean elevator_manualHomePressed = false;
+    HoodMode hood_mode = HoodMode.Idle;
 
     boolean drive_slow = false;
-    private Hood hood;
+
 
     // Constructor
     // Here we will be creating private constructor
     // restricted to this class itself
     public Remote() {
-
-        tyToHoodTicks.put(-15.0, 18000.0);
-        tyToHoodTicks.put(0.0, 10000.0);
-        tyToHoodTicks.put(15.0, 2000.0);
 
         tyToShooterSpeed.put(-15.0, 0.95);
         tyToShooterSpeed.put(0.0, 0.6);
@@ -87,9 +74,6 @@ public class Remote {
 
     }
 
-    public HoodMode hood_mode = HoodMode.Hold;
-
-    public InterpolatingDoubleTreeMap tyToHoodTicks = new InterpolatingDoubleTreeMap();
     public InterpolatingDoubleTreeMap tyToShooterSpeed = new InterpolatingDoubleTreeMap();
 
 
@@ -105,6 +89,10 @@ public class Remote {
         return climb_mode;
     }
 
+    public HoodMode getHoodMode(){
+        return hood_mode;
+    }
+
     public static double getLeftY(){
         return operatorJoystickDef.getLeftY();
     }
@@ -115,32 +103,6 @@ public class Remote {
 
     public static double getLeftTriggerAxis(){
         return operatorJoystickDef.getLeftTriggerAxis();
-    }
-
-  
-    public double getInnerElevatorTarget() {
-        return input_innerElevatorTarget;
-    }
-    public double getOuterElevatorTarget() {
-        return input_outerElevatorTarget;
-    }
-
-    public boolean getElevatorManual() {
-        return elevator_manual;
-    }
-
-    public void resetTargets() {
-        input_innerElevatorTarget = 0.;
-		input_outerElevatorTarget = 0;
-     
-    }
-
-    public boolean getHomeButtonPressed() {
-        return elevator_manualHomePressed;
-    }
-
-    public boolean getHomeButton() {
-        return elevator_manualHome;
     }
 
 
@@ -196,51 +158,10 @@ public class Remote {
         RawFiducial fiducial = fiducials[0];
         SmartDashboard.putNumber("TagDist", fiducial.distToCamera);
         }
-
-
-
-
-}
-  
-        // Elevator Manual Toggle
-        if (operatorJoystickDef.getRightBumperButtonPressed()) {
-            elevator_manual = !elevator_manual;
-         
-        }
-
-        
-        elevator_manualHomePressed = operatorJoystickDef.getRawButtonPressed(RemoteOperatorButtons.home);
-        elevator_manualHome = operatorJoystickDef.getRawButton(RemoteOperatorButtons.home);
-
-        if (elevator_manualHomePressed) {
-            resetTargets();
-        }
+    }
 
 
         drive_slow = driverJoystickDef.getRightBumperButton();
-
-
-
-        // Elevator
-        if (elevator_manual) {
-         
-        } else {
-            if (operatorJoystickDef.isConnected()) {
-                if (operatorJoystickDef.getAButton()) {
-                    input_innerElevatorTarget = Constants.ReefLayers.L1;
-                    input_outerElevatorTarget = 0.40;
-                } else if (operatorJoystickDef.getBButton()) {
-                    input_innerElevatorTarget = Constants.ReefLayers.L2;
-                    input_outerElevatorTarget = 0;
-                } else if (operatorJoystickDef.getXButton()) {
-                    input_innerElevatorTarget = Constants.ReefLayers.L3;
-                    input_outerElevatorTarget = 0;
-                } else if (operatorJoystickDef.getYButton()) {
-                    input_innerElevatorTarget = Constants.ReefLayers.L4;
-                    input_outerElevatorTarget = 0;
-                }
-            }
-        }
 
         inverseDriveDirection();
 
@@ -248,7 +169,7 @@ public class Remote {
         if(operatorJoystickDef.isConnected()){
             if(operatorJoystickDef.getRightY() > 0.05){
                 intake_mode = IntakeMode.Intake;
-                //-hood.setTargetTicks(0);
+
             } else if(operatorJoystickDef.getRightY() < -0.05){
                 intake_mode = IntakeMode.Reverse;
 
@@ -259,35 +180,24 @@ public class Remote {
 
 
         // Climb
-        if(driverJoystickDef.getRightBumperButton() == true){
+        if(driverJoystickDef.getPOV() == 0){
             climb_mode = ClimbMode.Climb;
-        } else if (driverJoystickDef.getLeftBumperButton() == true){
+        } else if (operatorJoystickDef.getPOV() == 180){
             climb_mode = ClimbMode.Reverse;
         }else{
             climb_mode = ClimbMode.Idle;
         }
 
-        // Hood
-        if (operatorJoystickDef.getYButton()){
-            hood_mode = HoodMode.AutoAim;
-        }else if (operatorJoystickDef.getRightBumperButton()){
-            hood_mode = HoodMode.ManualUp;
-            shooter_mode = ShooterMode.Idle;
-        }else if(operatorJoystickDef.getLeftBumperButton()){
-            hood_mode = HoodMode.ManualDown;
-            shooter_mode = ShooterMode.Idle;
+       // Hood
+        if(operatorJoystickDef.getPOV() == 0){
+            hood_mode = HoodMode.MoveUp;
+        } else if (operatorJoystickDef.getPOV() == 180){
+            hood_mode = HoodMode.MoveDown;
         }else{
-            hood_mode = HoodMode.Hold;
-            if (operatorJoystickDef.getLeftY()> 0.1) {
-                shooter_mode = ShooterMode.Reverse;
-            } else if (operatorJoystickDef.getLeftY()<-0.1) {
-                shooter_mode = ShooterMode.Shoot;
-            } else {
-                shooter_mode = ShooterMode.Idle;
-            } 
+            hood_mode = HoodMode.Idle;
         }
 
-
-
     }
+
+    
 }

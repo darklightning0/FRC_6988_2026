@@ -3,62 +3,65 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.5127207977207977,
-        "y": 6.0
+        "x": 4.923660968663942,
+        "y": 6.916210826210822
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.5127207977207977,
-        "y": 6.0
+        "x": 6.322735042738016,
+        "y": 6.897022792022788
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 4.523133903133903,
-        "y": 6.0
+        "x": 6.577450142453115,
+        "y": 6.140997150997147
       },
       "prevControl": {
-        "x": 3.5231339031339033,
-        "y": 6.0
+        "x": 6.4085189853256965,
+        "y": 6.3252856860490905
+      },
+      "nextControl": {
+        "x": 6.882477654072219,
+        "y": 5.808239865587535
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.016737891740863,
+        "y": 4.448447293447289
+      },
+      "prevControl": {
+        "x": 7.042578347584291,
+        "y": 4.745612535612527
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 1,
+      "rotationDegrees": -44.99999999999993
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "IntakeStart",
-      "waypointRelativePos": 0.0,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "IntakeStart"
-        }
-      }
-    },
-    {
-      "name": "ShooterShoot",
+      "name": "",
       "waypointRelativePos": 0,
       "endWaypointRelativePos": null,
       "command": null
-    },
-    {
-      "name": "ShooterReverse",
-      "waypointRelativePos": 1.0,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "ShooterReverse"
-        }
-      }
     }
   ],
   "globalConstraints": {
@@ -71,7 +74,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -91.36392753160293
   },
   "reversed": false,
   "folder": null,

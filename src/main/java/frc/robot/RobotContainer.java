@@ -42,8 +42,6 @@ import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Climb;
 import frc.robot.subsystems.Remote.IntakeMode;
-//import frc.robot.subsystems.AlgeaIntake.IntakeArm;
-//import frc.robot.subsystems.AlgeaIntake.IntakeWheels;
 import frc.robot.subsystems.Remote.ShooterMode;
 
 public class RobotContainer {
@@ -78,10 +76,23 @@ public class RobotContainer {
 
     public RobotContainer() {
         
-        
+       /*  NamedCommands.registerCommand("ShooterAuto", Commands.run(() -> {
+             double rotRate = 0;
+                if(LimelightHelpers.getTV("limelight")){
+                    rotRate = -LimelightHelpers.getTX("limelight") * 0.03;
+                }
+
+                drive.withVelocityX( 0)
+                .withVelocityY(0)
+                .withRotationalRate(rotRate * MaxAngularRate);
+        }));
+        */
 
         NamedCommands.registerCommand("ShooterReverse", Commands.runOnce(() -> {
-            autoShooterMode = ShooterMode.Idle;
+            autoShooterMode = ShooterMode.Shoot;
+        }));
+         NamedCommands.registerCommand("ShooterShoot", Commands.runOnce(() -> {
+            autoShooterMode = ShooterMode.Reverse;
         }));
 
              NamedCommands.registerCommand("IntakeStart", Commands.runOnce(() -> {
@@ -96,7 +107,7 @@ public class RobotContainer {
         }));
         
 
-        autoChooser = AutoBuilder.buildAutoChooser("onlyDrive");
+        autoChooser = AutoBuilder.buildAutoChooser("efekapi");
         SmartDashboard.putData("Auto Mode", autoChooser);
 
         configureBindings();
@@ -161,7 +172,21 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-      
+        /*final var idle = new SwerveRequest.Idle();
+        return Commands.sequence(
+            // Reset our field centric heading to match the robot
+            // facing away from our alliance station wall (0 deg).
+            drivetrain.runOnce(() -> drivetrain.seedFieldCentric(Rotation2d.kZero)),
+            // Then slowly drive forward (away from us) for 5 seconds.
+            drivetrain.applyRequest(() ->
+                drive.withVelocityX(0.5)
+                    .withVelocityY(0)
+                    .withRotationalRate(0)
+            )
+            .withTimeout(5.0),
+            // Finally idle for the rest of auton
+            drivetrain.applyRequest(() -> idle)
+        );*/
         return autoChooser.getSelected();
     }
 }

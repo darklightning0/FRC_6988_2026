@@ -52,6 +52,7 @@ public class Shooter {
 	public void mainloop(ShooterMode shooterMode) {
 
 		double flywheelSpeed = 0.0;
+		
 		if(this.custom_speed > 0){
 			flywheelSpeed = this.custom_speed;
 		} else {
@@ -66,12 +67,14 @@ public class Shooter {
 				break;
 
 			case Shoot:
+				this.custom_speed = 1;
 				percent = flywheelSpeed;
 				hopperRedline.set(ControlMode.PercentOutput, 0.35);
 				belt_CIM.set(ControlMode.PercentOutput, 0.8);
 				break;
 
 			case Reverse:
+				this.custom_speed = 0;
 				percent = Constants.SubsystemConstants.Output.shooterReverse;
 				hopperRedline.set(ControlMode.PercentOutput, -0.35);
 				belt_CIM.set(ControlMode.PercentOutput, -0.8);

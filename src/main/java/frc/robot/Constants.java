@@ -121,6 +121,9 @@ public final class Constants {
 			// Climb Output
 			public static final double climbClimb = 1.0;
 			public static final double climbReverse = -0.1;
+
+			public static final double hoodUp = 0.05;
+			public static final double hoodDown = -0.05;
 		}
 
 		public static class Voltage {
