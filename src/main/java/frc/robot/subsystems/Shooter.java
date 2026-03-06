@@ -16,6 +16,7 @@ public class Shooter {
 	double percent = 0.0;
 	double h_percent = 0.0;
 	double custom_speed = 0.0;
+	public double manualRevSpeed;
 
 	public final TalonSRX hopperRedline = new TalonSRX(Constants.SubsystemConstants.TalonIDs.SRX.shooter_redline);
 	public final TalonSRX leftMain = new TalonSRX(Constants.SubsystemConstants.TalonIDs.SRX.shooter_M_left);

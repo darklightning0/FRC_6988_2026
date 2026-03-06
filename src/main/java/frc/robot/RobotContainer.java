@@ -74,7 +74,7 @@ public class RobotContainer {
 
     private ShooterMode autoShooterMode= ShooterMode.Idle;
     private IntakeMode autoIntakeMode = IntakeMode.Idle;
-
+   
     public RobotContainer() {
         
        /*  NamedCommands.registerCommand("ShooterAuto", Commands.run(() -> {
@@ -106,6 +106,19 @@ public class RobotContainer {
           NamedCommands.registerCommand("ClimbAuto", Commands.runOnce(() -> {
         
         }));
+           NamedCommands.registerCommand("shooterRev1", Commands.runOnce(() -> {
+            m_shooter.manualRevSpeed = 0.6;
+        }));
+               NamedCommands.registerCommand("shooterRev2", Commands.runOnce(() -> {
+            m_shooter.manualRevSpeed = 0.65;
+        }));
+                  NamedCommands.registerCommand("shooterRev3", Commands.runOnce(() -> {
+            m_shooter.manualRevSpeed = 0.7;
+        }));
+                  NamedCommands.registerCommand("shooterRev4", Commands.runOnce(() -> {
+            m_shooter.manualRevSpeed = 0.8;
+        }));
+        
         
 
         autoChooser = AutoBuilder.buildAutoChooser("efekapi");
@@ -171,7 +184,7 @@ public class RobotContainer {
                         rotRate = -tx * 0.03;
                     }
                     rotRate = -LimelightHelpers.getTX("limelight") * 0.03;
-                    //point.withModuleDirection(new Rotation2d());
+                    point.withModuleDirection(new Rotation2d());
                 }
 
                 return drive.withVelocityX(-driverJoystick.getLeftY() * MaxSpeed)
