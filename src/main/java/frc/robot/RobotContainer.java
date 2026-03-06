@@ -50,11 +50,15 @@ public class RobotContainer {
     private double MaxAngularRate = RotationsPerSecond.of(0.35).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
     /* Setting up bindings for necessary control of the swerve drive platform */
-    private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
+    private final SwerveRequest.RobotCentric drive = new SwerveRequest.RobotCentric()
             .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
+
+    private final SwerveRequest.RobotCentricFacingAngle aim = new SwerveRequest.RobotCentricFacingAngle()
+    .withDeadband(MaxSpeed * 0.1)
+    .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
@@ -88,6 +92,9 @@ public class RobotContainer {
                 .withRotationalRate(rotRate * MaxAngularRate);
         }));
         */
+        aim.HeadingController.setPID(5.0, 0, 0);
+    aim.HeadingController.enableContinuousInput(-Math.PI, Math.PI);
+    aim.HeadingController.setTolerance(Math.toRadians(2.0));
 
         NamedCommands.registerCommand("ShooterReverse", Commands.runOnce(() -> {
             autoShooterMode = ShooterMode.Shoot;
@@ -157,30 +164,49 @@ public class RobotContainer {
 
         drivetrain.registerTelemetry(logger::telemeterize);
 
-         
+         /* 
         driverJoystick.y().onTrue(
             Commands.runOnce(()->LimelightHelpers.setPipelineIndex("limelight", 1))
             .andThen(
                 drivetrain.applyRequest(() -> {
                 double rotRate = 0;
+                double tx = LimelightHelpers.getTX("limelight");
+                double currentHeading = drivetrain.getState().Pose.getRotation().getDegrees();
+                double targetHeading = currentHeading -tx;
+                
                 if(LimelightHelpers.getTV("limelight")){
-                    double tx = LimelightHelpers.getTX("limelight");
-                    double currentHeading = drivetrain.getState().Pose.getRotation().getDegrees();
-                    double targetHeading = currentHeading - tx;
-                    if(Math.abs(tx) > 2){
-                        rotRate = -tx * 0.03;
-                    }
                     rotRate = -LimelightHelpers.getTX("limelight") * 0.03;
-                    //point.withModuleDirection(new Rotation2d());
+            
                 }
 
-                return drive.withVelocityX(-driverJoystick.getLeftY() * MaxSpeed)
-                .withVelocityY(-driverJoystick.getLeftX() * MaxSpeed)
-                 .withRotationalRate(rotRate * MaxAngularRate);
+                return drive.withVelocityX( 0)
+                .withVelocityY(0)
+                .withRotationalRate(rotRate * MaxAngularRate);
+
             })
             )
         ).onFalse(Commands.runOnce(() -> LimelightHelpers.setPipelineIndex("limelight", 0))
         );
+        */
+
+        driverJoystick.y().onTrue(
+    Commands.runOnce(() -> {
+        LimelightHelpers.setPipelineIndex("limelight", 1);
+        // Sample TX once, calculate and lock target heading
+        double tx = LimelightHelpers.getTX("limelight");
+        double currentHeading = drivetrain.getState().Pose.getRotation().getRadians();
+        double targetHeading = currentHeading - Math.toRadians(tx);
+        aim.withTargetDirection(new Rotation2d(targetHeading));
+    })
+    .andThen(
+        drivetrain.applyRequest(() ->
+            aim.withVelocityX(0)
+               .withVelocityY(0)
+        )
+    )
+).onFalse(
+    Commands.runOnce(() -> LimelightHelpers.setPipelineIndex("limelight", 0))
+);
     }
 
     public Command getAutonomousCommand() {
