@@ -56,13 +56,13 @@ public class Shooter {
         // 1. Check preset buttons FIRST (highest priority for manual control)
         double manualRevSpeed;
         if (operatorJoystick.y().getAsBoolean()) {
-            manualRevSpeed = 1.0;  // Y Button = 100% Speed
+            manualRevSpeed = 0.8;  // Y Button = 100% Speed
         } else if (operatorJoystick.b().getAsBoolean()) {
-            manualRevSpeed = 0.85; // B Button = 85% Speed
+            manualRevSpeed = 0.7; // B Button = 85% Speed
         } else if (operatorJoystick.a().getAsBoolean()) {
-            manualRevSpeed = 0.6;  // A Button = 60% Speed
+            manualRevSpeed = 0.65;  // A Button = 60% Speed
         } else if (operatorJoystick.x().getAsBoolean()) {
-            manualRevSpeed = 0.4;  // X Button = 40% Speed
+            manualRevSpeed = 0.6;  // X Button = 40% Speed
         } else {
             // 2. Fall back to joystick axis if no preset is held
             manualRevSpeed = Math.abs(operatorJoystick.getLeftY());

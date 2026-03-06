@@ -233,7 +233,7 @@ public class Robot extends TimedRobot {
                 SmartDashboard.putNumber("Vision Calculated Speed", requiredSpeed);
 
                 // Check if the drivetrain has finished aligning the robot
-                boolean isRobotAimed = Math.abs(LimelightHelpers.getTX("limelight")) < 3.0;
+                boolean isRobotAimed = Math.abs(LimelightHelpers.getTX("limelight")) < 1.0;
                 SmartDashboard.putBoolean("isRobotAimed", isRobotAimed);
 
                 if (isRobotAimed) {
