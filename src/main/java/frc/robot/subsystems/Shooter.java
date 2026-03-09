@@ -41,11 +41,11 @@ public class Shooter {
 	
 		TalonFXConfiguration leaderConfig = new TalonFXConfiguration();
         leaderConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-		leaderConfig.Slot0.kP= 0.1;
+		leaderConfig.Slot0.kP= 0.38;
 		leaderConfig.Slot0.kI = 0;
 		leaderConfig.Slot0.kD = 0;
-		leaderConfig.Slot0.kS = 0;
-		leaderConfig.Slot0.kV = 0;
+		leaderConfig.Slot0.kS = 0.14;
+		leaderConfig.Slot0.kV = 0.14;
         leaderConfig.CurrentLimits.StatorCurrentLimit = 60;
         leaderConfig.CurrentLimits.StatorCurrentLimitEnable = true;
 
@@ -93,7 +93,7 @@ public class Shooter {
             manualRevSpeed = 0.3;  // X Button = 40% Speed
         } else {
             // 2. Fall back to joystick axis if no preset is held
-            manualRevSpeed = Math.abs(operatorJoystick.getLeftY())*0.4;
+            manualRevSpeed = -35*operatorJoystick.getLeftY();
         }
 
 		// 3. Limelight auto-aim speed overrides manual only when active
@@ -137,7 +137,7 @@ public class Shooter {
 		
 		SmartDashboard.putNumber("Shooter Target", percent);
 	
-		
-		shooter_Talon.set(percent); //percent olaylarını deistirmek lazım.
+		shooter_Talon.setControl(velocityRequest.withVelocity(percent));
+		 //percent olaylarını deistirmek lazım.
 	}
 }
