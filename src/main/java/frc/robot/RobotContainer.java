@@ -50,12 +50,13 @@ public class RobotContainer {
     private double MaxAngularRate = RotationsPerSecond.of(0.35).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
     /* Setting up bindings for necessary control of the swerve drive platform */
-    private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
+    private final SwerveRequest.RobotCentric drive = new SwerveRequest.RobotCentric()
             .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
+    
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
     PigeonIMU pigeon2 = new PigeonIMU(21);
@@ -88,7 +89,7 @@ public class RobotContainer {
                 .withRotationalRate(rotRate * MaxAngularRate);
         }));
         */
-
+       
         NamedCommands.registerCommand("ShooterReverse", Commands.runOnce(() -> {
             autoShooterMode = ShooterMode.Shoot;
         }));
@@ -107,17 +108,25 @@ public class RobotContainer {
         
         }));
            NamedCommands.registerCommand("shooterRev1", Commands.runOnce(() -> {
-            m_shooter.manualRevSpeed = 0.6;
+            m_shooter.setCustomSpeed(0.4);
         }));
                NamedCommands.registerCommand("shooterRev2", Commands.runOnce(() -> {
-            m_shooter.manualRevSpeed = 0.65;
+            m_shooter.setCustomSpeed(0.5);
         }));
                   NamedCommands.registerCommand("shooterRev3", Commands.runOnce(() -> {
-            m_shooter.manualRevSpeed = 0.7;
+            m_shooter.setCustomSpeed(0.6);
         }));
                   NamedCommands.registerCommand("shooterRev4", Commands.runOnce(() -> {
-            m_shooter.manualRevSpeed = 0.8;
+            m_shooter.setCustomSpeed(0.7);
         }));
+
+        NamedCommands.registerCommand("resetAll", Commands.runOnce(() -> {
+            m_shooter.setCustomSpeed(0);
+            autoIntakeMode= IntakeMode.Idle ;
+            autoShooterMode = ShooterMode.Shoot;
+        }));
+            
+                  
         
         
 
@@ -170,30 +179,32 @@ public class RobotContainer {
 
         drivetrain.registerTelemetry(logger::telemeterize);
 
-         
+         /* 
         driverJoystick.y().onTrue(
             Commands.runOnce(()->LimelightHelpers.setPipelineIndex("limelight", 1))
             .andThen(
                 drivetrain.applyRequest(() -> {
                 double rotRate = 0;
+                double tx = LimelightHelpers.getTX("limelight");
+                double currentHeading = drivetrain.getState().Pose.getRotation().getDegrees();
+                double targetHeading = currentHeading -tx;
+                
                 if(LimelightHelpers.getTV("limelight")){
-                    double tx = LimelightHelpers.getTX("limelight");
-                    double currentHeading = drivetrain.getState().Pose.getRotation().getDegrees();
-                    double targetHeading = currentHeading - tx;
-                    if(Math.abs(tx) > 2){
-                        rotRate = -tx * 0.03;
-                    }
                     rotRate = -LimelightHelpers.getTX("limelight") * 0.03;
+            
                     point.withModuleDirection(new Rotation2d());
                 }
 
-                return drive.withVelocityX(-driverJoystick.getLeftY() * MaxSpeed)
-                .withVelocityY(-driverJoystick.getLeftX() * MaxSpeed)
-                 .withRotationalRate(rotRate * MaxAngularRate);
+                return drive.withVelocityX( 0)
+                .withVelocityY(0)
+                .withRotationalRate(rotRate * MaxAngularRate);
+
             })
             )
         ).onFalse(Commands.runOnce(() -> LimelightHelpers.setPipelineIndex("limelight", 0))
         );
+        */
+
     }
 
     public Command getAutonomousCommand() {

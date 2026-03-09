@@ -4,16 +4,27 @@ import static frc.robot.Constants.ControllerConstants.operatorJoystick;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.wpilibj.LEDReader;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Constants.SubsystemConstants;
 import frc.robot.subsystems.Remote.ShooterMode;
 
+import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.VelocityVoltage;
+
 
 public class Shooter {
 	double percent = 0.0;
+	VelocityVoltage velocityRequest = new VelocityVoltage(0);
+
 	double h_percent = 0.0;
 	double custom_speed = 0.0;
 	public double manualRevSpeed;
@@ -21,12 +32,28 @@ public class Shooter {
 	public final TalonSRX hopperRedline = new TalonSRX(Constants.SubsystemConstants.TalonIDs.SRX.shooter_redline);
 	public final TalonSRX leftMain = new TalonSRX(Constants.SubsystemConstants.TalonIDs.SRX.shooter_M_left);
 	public final TalonSRX rightMain = new TalonSRX(Constants.SubsystemConstants.TalonIDs.SRX.shooter_M_right);
-	public final TalonSRX belt_CIM = new TalonSRX(Constants.SubsystemConstants.TalonIDs.SRX.shooter_belt);
-
+	//public final TalonSRX belt_CIM = new TalonSRX(Constants.SubsystemConstants.TalonIDs.SRX.shooter_belt);
+	public final TalonFX shooter_Talon = new TalonFX(16);
+ 
 	public Shooter() {
 		
-		belt_CIM.setInverted(false);
 		hopperRedline.setInverted(true);
+	
+		TalonFXConfiguration leaderConfig = new TalonFXConfiguration();
+        leaderConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+		leaderConfig.Slot0.kP= 0.1;
+		leaderConfig.Slot0.kI = 0;
+		leaderConfig.Slot0.kD = 0;
+		leaderConfig.Slot0.kS = 0;
+		leaderConfig.Slot0.kV = 0;
+        leaderConfig.CurrentLimits.StatorCurrentLimit = 60;
+        leaderConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+
+        leaderConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+
+        shooter_Talon.getConfigurator().apply(leaderConfig);
+
+
 	}
 /* 
 	double modeToPercent(ShooterMode mode) {
@@ -54,16 +81,16 @@ public class Shooter {
 
 		double flywheelSpeed = 0.0;
 		
-        // 1. Check preset buttons FIRST (highest priority for manual control)
+        // 1. Check preset buttons FIRST VELOCITY 
         double manualRevSpeed;
         if (operatorJoystick.y().getAsBoolean()) {
-            manualRevSpeed = 0.8;  // Y Button = 100% Speed
+            manualRevSpeed = 0.48;  // Y Button = 100% Speed
         } else if (operatorJoystick.b().getAsBoolean()) {
-            manualRevSpeed = 0.7; // B Button = 85% Speed
+            manualRevSpeed = 0.46; // B Button = 85% Speed
         } else if (operatorJoystick.a().getAsBoolean()) {
-            manualRevSpeed = 0.65;  // A Button = 60% Speed
+            manualRevSpeed = 0.42;  // A Button = 60% Speed
         } else if (operatorJoystick.x().getAsBoolean()) {
-            manualRevSpeed = 0.6;  // X Button = 40% Speed
+            manualRevSpeed = 0.4;  // X Button = 40% Speed
         } else {
             // 2. Fall back to joystick axis if no preset is held
             manualRevSpeed = Math.abs(operatorJoystick.getLeftY());
@@ -80,36 +107,37 @@ public class Shooter {
 			case Rev:
 				percent = flywheelSpeed;
 				hopperRedline.set(ControlMode.PercentOutput, 0.0);
-				belt_CIM.set(ControlMode.PercentOutput, 0.0);
+				rightMain.set(ControlMode.PercentOutput,0.0);
+				
 				break;
 
 			case Shoot:
                 // No custom_speed override here! It stays at joystick/limelight speed.
 				percent = flywheelSpeed; 
 				hopperRedline.set(ControlMode.PercentOutput, 0.35);
-				belt_CIM.set(ControlMode.PercentOutput, 0.8);
+				rightMain.set(ControlMode.PercentOutput,0.5);
+				
 				break;
 
 			case Reverse:
                 // Uses the joystick variable to spin everything backwards
 				percent = -manualRevSpeed; 
 				hopperRedline.set(ControlMode.PercentOutput, -0.35);
-				belt_CIM.set(ControlMode.PercentOutput, -0.8);
+				rightMain.set(ControlMode.PercentOutput,-0.5);
 				break;
 
 			case Idle:
 			default:
 				percent = 0.0;
 				hopperRedline.set(ControlMode.PercentOutput, 0.0);
-				belt_CIM.set(ControlMode.PercentOutput, 0.0);
+				rightMain.set(ControlMode.PercentOutput,0.0);
 				this.custom_speed = 0.0;
 				break;
 		}
 		
-		SmartDashboard.putNumber("Hopper Output",belt_CIM.getMotorOutputPercent());
 		SmartDashboard.putNumber("Shooter Target", percent);
-		leftMain.set(ControlMode.PercentOutput, percent);
-		rightMain.set(ControlMode.PercentOutput, percent);
+	
+		
+		shooter_Talon.set(percent); //percent olaylarını deistirmek lazım.
 	}
-
 }

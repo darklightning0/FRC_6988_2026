@@ -52,6 +52,8 @@ public final class Constants {
 				public static final int Intake_Arm = 24; // Intake arm motor
 				public static final int leader_climb = 23;
 				public static final int follower_climb = 22;  
+				public static final int shooter_belt = 16; // Shooter left
+
 
 			}
 
@@ -93,8 +95,8 @@ public final class Constants {
 
 		public static class Output {
 			// Intake outputs
-			public static final double intakeIntake = 0.45;
-			public static final double intakeReverse = -0.45;
+			public static final double intakeIntake = 0.55;
+			public static final double intakeReverse = -0.55;
 			public static final double intakeIdle = 0.05;
 
 			// Outer output amplifier

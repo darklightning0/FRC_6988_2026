@@ -28,7 +28,7 @@ public class Hood {
 			case MoveDown:
 				return SubsystemConstants.Output.hoodDown;
 			case Idle: 
-            return 0.05; 
+            return 0.0; 
 			default:
 				return 0.0;
         }

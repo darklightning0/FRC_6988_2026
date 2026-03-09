@@ -178,6 +178,7 @@ public class Remote {
             }
         }
 
+   
 
         if(operatorJoystickDef.isConnected()){
             
@@ -188,18 +189,15 @@ public class Remote {
             if (operatorJoystickDef.getLeftStickButton()) {
                 // Clicked down (L3): Shoot Forward
                 shooter_mode = ShooterMode.Shoot; 
-                intake_mode = IntakeMode.Intake;
             } else if (isPresetPressed || operatorJoystickDef.getLeftY() < -0.05) {
                 // Pushed UP or a Preset is held: Rev Forward
                 shooter_mode = ShooterMode.Rev; 
-                intake_mode = IntakeMode.Intake;
              
             } else if (operatorJoystickDef.getLeftY() > 0.05) {
                 // Pulled DOWN (Positive Y): Run everything in Reverse to clear a jam
                 shooter_mode = ShooterMode.Reverse;
             } else {
                 shooter_mode = ShooterMode.Idle;
-                intake_mode = IntakeMode.Idle;
             }
         }
 
