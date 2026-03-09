@@ -114,10 +114,10 @@ public class RobotContainer {
             m_shooter.setCustomSpeed(24);
         }));
                   NamedCommands.registerCommand("shooterRev3", Commands.runOnce(() -> {
-            m_shooter.setCustomSpeed(0.6);
+            m_shooter.setCustomSpeed(23);
         }));
                   NamedCommands.registerCommand("shooterRev4", Commands.runOnce(() -> {
-            m_shooter.setCustomSpeed(0.7);
+            m_shooter.setCustomSpeed(22);
         }));
 
         NamedCommands.registerCommand("resetAll", Commands.runOnce(() -> {

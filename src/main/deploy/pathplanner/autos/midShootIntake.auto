@@ -1,0 +1,103 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "midShootIntake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shooterRev4"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.75
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IntakeStart"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShooterReverse"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 4.5
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "resetAll"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "midShootIntake1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "midIntakeShoot2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "midIntakeShoot3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IntakeStart"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "midIntakeShoot4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IntakeStop"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "midIntakeShoot5"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "midIntakeShoot6"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}
