@@ -111,7 +111,7 @@ public class RobotContainer {
             m_shooter.setCustomSpeed(0.4);
         }));
                NamedCommands.registerCommand("shooterRev2", Commands.runOnce(() -> {
-            m_shooter.setCustomSpeed(0.5);
+            m_shooter.setCustomSpeed(24);
         }));
                   NamedCommands.registerCommand("shooterRev3", Commands.runOnce(() -> {
             m_shooter.setCustomSpeed(0.6);

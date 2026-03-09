@@ -33,6 +33,60 @@
           "data": {
             "name": "IntakeStop"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "intake3return"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "intakeMatchTestReturn"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "tungtungsahur"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IntakeStart"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shooterRev2"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.75
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShooterReverse"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 5.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "resetAll"
+          }
         }
       ]
     }

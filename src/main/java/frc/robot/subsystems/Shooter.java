@@ -84,13 +84,13 @@ public class Shooter {
         // 1. Check preset buttons FIRST VELOCITY 
         double manualRevSpeed;
         if (operatorJoystick.y().getAsBoolean()) {
-            manualRevSpeed = 0.48;  // Y Button = 100% Speed
+            manualRevSpeed = 24;  // kose
         } else if (operatorJoystick.b().getAsBoolean()) {
-            manualRevSpeed = 0.46; // B Button = 85% Speed
+            manualRevSpeed = 23; // climbonu
         } else if (operatorJoystick.a().getAsBoolean()) {
-            manualRevSpeed = 0.42;  // A Button = 60% Speed
+            manualRevSpeed =22;// A Button = 60% Speed
         } else if (operatorJoystick.x().getAsBoolean()) {
-            manualRevSpeed = 0.3;  // X Button = 40% Speed
+            manualRevSpeed = 21;// X Button = 40% Speed
         } else {
             // 2. Fall back to joystick axis if no preset is held
             manualRevSpeed = -35*operatorJoystick.getLeftY();
