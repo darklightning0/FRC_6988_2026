@@ -117,8 +117,8 @@ public final class Constants {
 			public static final double innerUpMax = 0.85;
 
 			// Shooter output
-			public static final double shooterShoot = 1.0;
-			public static final double shooterReverse = -1.0;
+			public static final double shooterShoot = 0.4;
+			public static final double shooterReverse = -0.4;
 
 			// Climb Output
 			public static final double climbClimb = 1.0;

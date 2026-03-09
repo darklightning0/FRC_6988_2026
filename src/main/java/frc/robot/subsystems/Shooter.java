@@ -90,10 +90,10 @@ public class Shooter {
         } else if (operatorJoystick.a().getAsBoolean()) {
             manualRevSpeed = 0.42;  // A Button = 60% Speed
         } else if (operatorJoystick.x().getAsBoolean()) {
-            manualRevSpeed = 0.4;  // X Button = 40% Speed
+            manualRevSpeed = 0.3;  // X Button = 40% Speed
         } else {
             // 2. Fall back to joystick axis if no preset is held
-            manualRevSpeed = Math.abs(operatorJoystick.getLeftY());
+            manualRevSpeed = Math.abs(operatorJoystick.getLeftY())*0.4;
         }
 
 		// 3. Limelight auto-aim speed overrides manual only when active
