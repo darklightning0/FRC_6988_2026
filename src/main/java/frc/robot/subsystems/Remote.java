@@ -189,11 +189,11 @@ public class Remote {
             if (operatorJoystickDef.getLeftStickButton()) {
                 // Clicked down (L3): Shoot Forward
                 shooter_mode = ShooterMode.Shoot; 
-            } else if (isPresetPressed || operatorJoystickDef.getLeftY() < -0.05) {
+            } else if (isPresetPressed || operatorJoystickDef.getLeftY() < -0.2) {
                 // Pushed UP or a Preset is held: Rev Forward
                 shooter_mode = ShooterMode.Rev; 
              
-            } else if (operatorJoystickDef.getLeftY() > 0.05) {
+            } else if (operatorJoystickDef.getLeftY() > 0.2) {
                 // Pulled DOWN (Positive Y): Run everything in Reverse to clear a jam
                 shooter_mode = ShooterMode.Reverse;
             } else {

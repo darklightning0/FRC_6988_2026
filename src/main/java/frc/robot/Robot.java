@@ -214,14 +214,14 @@ public class Robot extends TimedRobot {
     // 2. SHOOTER CONTROL (Auto-Interpolation vs Manual)
     // ==========================================
     // Check if the operator is holding the Y button to auto-align and shoot
-    if (driverJoystick.y().getAsBoolean()) {
+if (driverJoystick.y().getAsBoolean()) {
         
         if (LimelightHelpers.getTV("limelight")) {
             
             // 1. Get the ID of the tag we are currently tracking
             double currentTagID = LimelightHelpers.getFiducialID("limelight");
             
-            // 2. Check if it's one of the valid Hub/Speaker tags (CHANGE THESE NUMBERS!)
+            // 2. Check if it's one of the valid Hub/Speaker tags
             boolean isValidTarget = (currentTagID == 8 || currentTagID == 9 || currentTagID == 10 || currentTagID == 11 || currentTagID == 24 || currentTagID == 25 || currentTagID == 26 || currentTagID == 27); 
 
             if (isValidTarget) {
@@ -232,17 +232,9 @@ public class Robot extends TimedRobot {
                 m_robotContainer.m_shooter.setCustomSpeed(requiredSpeed);
                 SmartDashboard.putNumber("Vision Calculated Speed", requiredSpeed);
 
-                // Check if the drivetrain has finished aligning the robot
-                boolean isRobotAimed = Math.abs(LimelightHelpers.getTX("limelight")) < 1.0;
-                SmartDashboard.putBoolean("isRobotAimed", isRobotAimed);
-
-                if (isRobotAimed) {
-                    // If aligned and valid, fire the note!
-                    m_robotContainer.m_shooter.mainloop(Remote.ShooterMode.Shoot);
-                } else {
-                    // If valid but still turning, just rev
-                    m_robotContainer.m_shooter.mainloop(Remote.ShooterMode.Rev);
-                }
+                // FIRE THE NOTE IMMEDIATELY (REMOVED ALIGNMENT CHECK)
+                m_robotContainer.m_shooter.mainloop(Remote.ShooterMode.Shoot);
+                
             } else {
                 // If the tag is NOT valid, just rev at a safe speed, DO NOT SHOOT
                 m_robotContainer.m_shooter.setCustomSpeed(0.5);
