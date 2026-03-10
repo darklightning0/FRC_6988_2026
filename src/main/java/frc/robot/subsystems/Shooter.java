@@ -81,8 +81,7 @@ public class Shooter {
 
 		double flywheelSpeed = 0.0;
 		
-        // 1. Check preset buttons FIRST VELOCITY 
-        double manualRevSpeed;
+    
         if (operatorJoystick.y().getAsBoolean()) {
             manualRevSpeed = 24; // CLIMB ONU
         } else if (operatorJoystick.b().getAsBoolean()) {
@@ -90,14 +89,18 @@ public class Shooter {
         } else if (operatorJoystick.a().getAsBoolean()) {
             manualRevSpeed = 22;
         } else if (operatorJoystick.x().getAsBoolean()) {
-            manualRevSpeed = 21;  // X Button = 40% Speed
-        } else if(this.custom_speed>0){
-				manualRevSpeed = this.custom_speed; // Use Auto-Aim Limelight speed
-		}
-		else {
+            manualRevSpeed = 10;  // X Button = 40% Speed
+        } else {
             // 2. Fall back to joystick axis if no preset is held
             manualRevSpeed = -35*operatorJoystick.getLeftY();
         }
+
+		// 3. Limelight auto-aim speed overrides manual only when active
+		if(this.custom_speed > 0){
+			flywheelSpeed = this.custom_speed; // Use Auto-Aim Limelight speed
+		} else {
+			flywheelSpeed = manualRevSpeed;    // Use Manual Joystick/Preset speed
+		}
 
 		switch(shooterMode){
 			case Rev:

@@ -111,19 +111,25 @@ public class RobotContainer {
             m_shooter.setCustomSpeed(0.4);
         }));
                NamedCommands.registerCommand("shooterRev2", Commands.runOnce(() -> {
+                autoShooterMode = ShooterMode.Rev;
             m_shooter.setCustomSpeed(24);
+            
         }));
                   NamedCommands.registerCommand("shooterRev3", Commands.runOnce(() -> {
+                    autoShooterMode = ShooterMode.Rev;
             m_shooter.setCustomSpeed(23);
+
         }));
                   NamedCommands.registerCommand("shooterRev4", Commands.runOnce(() -> {
+                    autoShooterMode = ShooterMode.Rev;
             m_shooter.setCustomSpeed(22);
+            
         }));
 
         NamedCommands.registerCommand("resetAll", Commands.runOnce(() -> {
             m_shooter.setCustomSpeed(0);
             autoIntakeMode= IntakeMode.Idle ;
-            autoShooterMode = ShooterMode.Shoot;
+            autoShooterMode = ShooterMode.Idle;
         }));
             
                   
