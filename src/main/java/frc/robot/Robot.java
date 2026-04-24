@@ -193,7 +193,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
-    m_robotContainer.m_remote.mainloop();
+    m_robotContainer.m_remote.mainloop(m_robotContainer);
 		ShooterMode shooterMode = m_robotContainer.m_remote.getShooterMode();
     IntakeMode intakeMode = m_robotContainer.m_remote.getIntakeMode();
     IntakeDeployMode intakeDeployMode = m_robotContainer.m_remote.getIntakeDeployMode();

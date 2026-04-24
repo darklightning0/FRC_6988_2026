@@ -76,6 +76,10 @@ public class Intake {
         targetPosition = 0;
     }
 
+    public double getDeployPosition() {
+        return DEPLOY_POSITION;
+    }
+
     public void mainloop(IntakeMode intakeMode, IntakeDeployMode intakeDeployMode) {
     
         // 1. Determine where we want the arm to go

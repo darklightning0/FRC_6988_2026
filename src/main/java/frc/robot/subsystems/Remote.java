@@ -7,6 +7,7 @@ import static frc.robot.Constants.ControllerConstants.operatorJoystickDef;
 
 import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.SubsystemConstants.RemoteOperatorButtons;
 import frc.robot.LimelightHelpers.RawFiducial;
 
@@ -64,7 +65,6 @@ public class Remote {
     ShooterMode shooter_mode = ShooterMode.Idle;
     IntakeMode intake_mode = IntakeMode.Idle;
     IntakeDeployMode intake_deploy_mode = IntakeDeployMode.Stow;
-    Boolean deployToggle = false;
     ClimbMode climb_mode = ClimbMode.Idle;
     HoodMode hood_mode = HoodMode.Idle;
 
@@ -168,7 +168,7 @@ public class Remote {
         return 0;
     }
 
-    public void mainloop() {
+    public void mainloop(RobotContainer robotContainer) {
       
         drive_slow = driverJoystickDef.getRightBumperButton();
 
@@ -190,12 +190,15 @@ public class Remote {
         // ==========================================
         // INTAKE ARM: AUTOMATIC DEPLOY/STOW (Right Stick Click)
         // ==========================================
-        if(operatorJoystickDef.getRightStickButtonPressed() && deployToggle == false){
-            intake_deploy_mode = IntakeDeployMode.Deploy;
-            deployToggle = true; // Flips the toggle
-        } else if(operatorJoystickDef.getRightStickButtonPressed() && deployToggle == true){
-            intake_deploy_mode = IntakeDeployMode.Stow;
-            deployToggle = false; // Flips the toggle
+        if(operatorJoystickDef.getRightStickButtonPressed()){
+            // If the arm is currently closer to the STOW position (0.0)...
+            // Use half of DEPLOY_POSITION as the threshold
+            double deployThreshold = robotContainer.m_intake.getDeployPosition() * 0.5;
+            if(robotContainer.m_intake.intakeDeployer.getPosition().getValueAsDouble() < deployThreshold) {
+                intake_deploy_mode = IntakeDeployMode.Deploy; // ...then Deploy it.
+            } else {
+                intake_deploy_mode = IntakeDeployMode.Stow;  // ...otherwise, Stow it.
+            }
         }
 
         // ==========================================
