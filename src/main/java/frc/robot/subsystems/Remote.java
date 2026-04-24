@@ -14,6 +14,7 @@ import frc.robot.LimelightHelpers.RawFiducial;
 // import frc.robot.Constants.SubsystemConstants.RemoteOperatorButtons;
 // import frc.robot.util.UltrasonicSensor;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import edu.wpi.first.util.datalog.BooleanLogEntry;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 enum DriveMode {
@@ -42,7 +43,13 @@ public class Remote {
         Reverse,
 
     }
-
+      public static enum IntakeDeployMode {
+        Deploy,
+        Stow,
+        ManualUP,
+            ManualDOWN,
+            Idle
+    }
     public static enum HoodMode {
 
         MoveUp,
@@ -56,10 +63,13 @@ public class Remote {
 
     ShooterMode shooter_mode = ShooterMode.Idle;
     IntakeMode intake_mode = IntakeMode.Idle;
+    IntakeDeployMode intake_deploy_mode = IntakeDeployMode.Stow;
+    Boolean deployToggle = false;
     ClimbMode climb_mode = ClimbMode.Idle;
     HoodMode hood_mode = HoodMode.Idle;
 
     boolean drive_slow = false;
+    private double manual_shooter_speed = 0.0;
 
 
     // Constructor
@@ -67,9 +77,9 @@ public class Remote {
     // restricted to this class itself
     public Remote() {
 
-        tyToShooterSpeed.put(-15.0, 0.95);
-        tyToShooterSpeed.put(0.0, 0.6);
-        tyToShooterSpeed.put(15.0, 0.35);
+        tyToShooterSpeed.put(1.5, 30.0); // Subwoofer
+        tyToShooterSpeed.put(3.0, 45.0); // Mid-range
+        tyToShooterSpeed.put(5.0, 60.0); // Far shot
 
 
     }
@@ -84,13 +94,19 @@ public class Remote {
     public IntakeMode getIntakeMode(){
         return intake_mode;
     }
-
+      public IntakeDeployMode getIntakeDeployMode(){
+        return intake_deploy_mode;
+    }
     public ClimbMode getClimbMode(){
         return climb_mode;
     }
 
     public HoodMode getHoodMode(){
         return hood_mode;
+    }
+
+    public double getManualShooterSpeed() {
+        return manual_shooter_speed;
     }
 
     public static double getLeftY(){
@@ -125,6 +141,13 @@ public class Remote {
         }
     }
 
+    public boolean getHomeButton() {
+        if(operatorJoystickDef.isConnected()) {
+            return operatorJoystickDef.getStartButton(); // Uses the Start button
+        }
+        return false;
+    }
+
     public double getDriveX() {
         if (driverJoystick.isConnected()) {
             return -driverJoystick.getLeftY() * getDriveFactor()*driveDirection;
@@ -147,79 +170,80 @@ public class Remote {
 
     public void mainloop() {
       
-       
-    
-
-    if (LimelightHelpers.getTV("limelight")==true ){
-       
-        RawFiducial[] fiducials = LimelightHelpers.getRawFiducials("limelight");
-        if(fiducials != null && fiducials.length > 0){
-        SmartDashboard.putNumber("FiducalID", LimelightHelpers.getFiducialID("limelight"));
-        RawFiducial fiducial = fiducials[0];
-        SmartDashboard.putNumber("TagDist", fiducial.distToCamera);
-        }
-    }
-
-
         drive_slow = driverJoystickDef.getRightBumperButton();
 
         inverseDriveDirection();
 
-        // Intake
-        if(operatorJoystickDef.isConnected()){
-            if(operatorJoystickDef.getRightY() > 0.05){
+        // ==========================================
+        // INTAKE ROLLERS (POV)
+        // ==========================================
+        if (operatorJoystickDef.isConnected()) {
+            if (operatorJoystickDef.getPOV() == 0) { // UP on D-Pad
                 intake_mode = IntakeMode.Intake;
-
-            } else if(operatorJoystickDef.getRightY() < -0.05){
+            } else if (operatorJoystickDef.getPOV() == 180) { // DOWN on D-Pad
                 intake_mode = IntakeMode.Reverse;
-
             } else {
                 intake_mode = IntakeMode.Idle;
             }
         }
 
-   
+        // ==========================================
+        // INTAKE ARM: AUTOMATIC DEPLOY/STOW (Right Stick Click)
+        // ==========================================
+        if(operatorJoystickDef.getRightStickButtonPressed() && deployToggle == false){
+            intake_deploy_mode = IntakeDeployMode.Deploy;
+            deployToggle = true; // Flips the toggle
+        } else if(operatorJoystickDef.getRightStickButtonPressed() && deployToggle == true){
+            intake_deploy_mode = IntakeDeployMode.Stow;
+            deployToggle = false; // Flips the toggle
+        }
+
+        // ==========================================
+        // INTAKE ARM: MANUAL CONTROL (Now on Right Joystick Y-Axis)
+        // ==========================================
+        double rightY = operatorJoystickDef.getRightY();
+        if (rightY < -0.2) { // Pushing UP on right stick
+            intake_deploy_mode = IntakeDeployMode.ManualUP;
+        } else if (rightY > 0.2) { // Pulling DOWN on right stick
+            intake_deploy_mode = IntakeDeployMode.ManualDOWN;
+        } else if (intake_deploy_mode != IntakeDeployMode.Deploy && intake_deploy_mode != IntakeDeployMode.Stow) {
+            intake_deploy_mode = IntakeDeployMode.Idle;
+        }
 
         if(operatorJoystickDef.isConnected()){
             
-            // Check if any of the preset buttons are currently being held
+            // 1. Determine Manual Speed
+            if (operatorJoystickDef.getYButton()) { 
+                manual_shooter_speed = 60; // 60 RPS
+            } else if (operatorJoystickDef.getBButton()) { 
+                manual_shooter_speed = 50; // 50 RPS
+            } else if (operatorJoystickDef.getAButton()) { 
+                manual_shooter_speed = 40; // 40 RPS
+            } else if (operatorJoystickDef.getXButton()) { 
+                manual_shooter_speed = 30; // 30 RPS
+            } else if (Math.abs(operatorJoystickDef.getLeftY()) > 0.1) {
+                // Manual stick revving (maps -1.0 to 1.0 -> 0 to 60 RPS)
+                manual_shooter_speed = Math.abs(operatorJoystickDef.getLeftY()) * 60.0;
+            }
+
+            // 2. Determine State
             boolean isPresetPressed = operatorJoystickDef.getYButton() || operatorJoystickDef.getBButton() || 
-                                      operatorJoystickDef.getAButton() || operatorJoystickDef.getXButton();
+                                      operatorJoystickDef.getAButton() || operatorJoystickDef.getXButton() ||
+                                      Math.abs(operatorJoystickDef.getLeftY()) > 0.1;
 
             if (operatorJoystickDef.getLeftStickButton()) {
-                // Clicked down (L3): Shoot Forward
-                shooter_mode = ShooterMode.Shoot; 
-            } else if (isPresetPressed || operatorJoystickDef.getLeftY() < -0.2) {
-                // Pushed UP or a Preset is held: Rev Forward
-                shooter_mode = ShooterMode.Rev; 
-             
-            } else if (operatorJoystickDef.getLeftY() > 0.2) {
-                // Pulled DOWN (Positive Y): Run everything in Reverse to clear a jam
-                shooter_mode = ShooterMode.Reverse;
+                shooter_mode = ShooterMode.Shoot; // Feed the ball
+            } else if (isPresetPressed) {
+                shooter_mode = ShooterMode.Rev;   // Just spin flywheels
+            } else if (operatorJoystickDef.getRightY() > 0.2) {
+                shooter_mode = ShooterMode.Reverse; // Un-jam
             } else {
                 shooter_mode = ShooterMode.Idle;
             }
         }
 
 
-        // Climb
-        if(driverJoystickDef.getPOV() == 180){
-            climb_mode = ClimbMode.Climb;
-        } else if (driverJoystickDef.getPOV() == 0){
-            climb_mode = ClimbMode.Reverse;
-        }else{
-            climb_mode = ClimbMode.Idle;
-        }
-
-       // Hood
-        if(operatorJoystickDef.getPOV() == 180){
-            hood_mode = HoodMode.MoveUp;
-        } else if (operatorJoystickDef.getPOV() == 0){
-            hood_mode = HoodMode.MoveDown;
-        }else{
-            hood_mode = HoodMode.Idle;
-        }
-
+  
     }
 
     

@@ -5,10 +5,8 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
 
-import com.ctre.phoenix.sensors.PigeonIMU;
+import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -17,13 +15,14 @@ import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+
 
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
@@ -31,19 +30,17 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 //import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 import static frc.robot.Constants.ControllerConstants.driverJoystick;
-import static frc.robot.Constants.ControllerConstants.driverJoystickID;
-import static frc.robot.Constants.ControllerConstants.operatorJoystick;
 
-import frc.robot.LimelightHelpers.LimelightResults;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.subsystems.Hood;
+
 import frc.robot.subsystems.Remote;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Climb;
 import frc.robot.subsystems.Remote.IntakeMode;
 import frc.robot.subsystems.Remote.ShooterMode;
+import frc.robot.subsystems.Remote.IntakeDeployMode;
+
 
 public class RobotContainer {
     private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -59,14 +56,11 @@ public class RobotContainer {
     
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
-    PigeonIMU pigeon2 = new PigeonIMU(21);
-    
+    public final Pigeon2 pigeon2 = new Pigeon2(21);    
 
     public final Remote m_remote = new Remote();
     public final Shooter m_shooter = new Shooter();
     public final Intake m_intake = new Intake();
-    public final Hood m_hood = new Hood();
-    public final Climb m_climb = new Climb();
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
@@ -75,61 +69,81 @@ public class RobotContainer {
 
     private ShooterMode autoShooterMode= ShooterMode.Idle;
     private IntakeMode autoIntakeMode = IntakeMode.Idle;
-   
+    private IntakeDeployMode autoIntakeDeployMode = IntakeDeployMode.Stow;
+    public boolean enableAutoRotation = true;
+
     public RobotContainer() {
         
-       /*  NamedCommands.registerCommand("ShooterAuto", Commands.run(() -> {
-             double rotRate = 0;
-                if(LimelightHelpers.getTV("limelight")){
-                    rotRate = -LimelightHelpers.getTX("limelight") * 0.03;
-                }
-
-                drive.withVelocityX( 0)
-                .withVelocityY(0)
-                .withRotationalRate(rotRate * MaxAngularRate);
+        // ==========================================
+        // 1. INTAKE COMMANDS
+        // ==========================================
+        // Arm Movement Only
+        NamedCommands.registerCommand("IntakeDeploy", Commands.runOnce(() -> {
+            autoIntakeDeployMode = IntakeDeployMode.Deploy; 
         }));
-        */
-       
-        NamedCommands.registerCommand("ShooterReverse", Commands.runOnce(() -> {
+        NamedCommands.registerCommand("IntakeStow", Commands.runOnce(() -> {
+            autoIntakeDeployMode = IntakeDeployMode.Stow;
+        }));
+
+        // Roller Movement Only
+        NamedCommands.registerCommand("IntakeStart", Commands.runOnce(() -> {
+            autoIntakeMode = IntakeMode.Intake;
+        }));
+        NamedCommands.registerCommand("IntakeStop", Commands.runOnce(() -> {
+            autoIntakeMode = IntakeMode.Idle;
+        }));
+        NamedCommands.registerCommand("IntakeReverse", Commands.runOnce(() -> {
+            autoIntakeMode = IntakeMode.Reverse;
+        }));
+
+        // COMBOS (Highly recommended for PathPlanner)
+        NamedCommands.registerCommand("IntakeFull", Commands.runOnce(() -> {
+            autoIntakeDeployMode = IntakeDeployMode.Deploy; 
+            autoIntakeMode = IntakeMode.Intake;
+        }));
+        NamedCommands.registerCommand("IntakeSafe", Commands.runOnce(() -> {
+            autoIntakeDeployMode = IntakeDeployMode.Stow; 
+            autoIntakeMode = IntakeMode.Idle;
+        }));
+
+        // ==========================================
+        // 2. SHOOTER COMMANDS
+        // ==========================================
+        // Firing sequence
+        NamedCommands.registerCommand("ShooterRevVision", Commands.runOnce(() -> {
+            // Tells the shooter to rev based on the Limelight distance!
+            m_shooter.setCustomSpeed(0); // 0 triggers the vision math in Robot.java
+            autoShooterMode = ShooterMode.Rev;
+        }));
+        NamedCommands.registerCommand("ShooterShoot", Commands.runOnce(() -> {
             autoShooterMode = ShooterMode.Shoot;
         }));
-         NamedCommands.registerCommand("ShooterShoot", Commands.runOnce(() -> {
+        NamedCommands.registerCommand("ShooterStop", Commands.runOnce(() -> {
+            autoShooterMode = ShooterMode.Idle;
+        }));
+        NamedCommands.registerCommand("ShooterReverse", Commands.runOnce(() -> {
             autoShooterMode = ShooterMode.Reverse;
         }));
 
-             NamedCommands.registerCommand("IntakeStart", Commands.runOnce(() -> {
-            autoIntakeMode= IntakeMode.Intake;
+        // Preset RPMs (If you want to shoot blind from specific spots without vision)
+        NamedCommands.registerCommand("ShooterRev1", Commands.runOnce(() -> {
+            m_shooter.setCustomSpeed(35.0); // RPS for Subwoofer
+            autoShooterMode = ShooterMode.Rev;
         }));
-        
-             NamedCommands.registerCommand("IntakeStop", Commands.runOnce(() -> {
-            autoIntakeMode= IntakeMode.Idle ;
-        }));
-          NamedCommands.registerCommand("ClimbAuto", Commands.runOnce(() -> {
-        
-        }));
-           NamedCommands.registerCommand("shooterRev1", Commands.runOnce(() -> {
-            m_shooter.setCustomSpeed(0.4);
-        }));
-               NamedCommands.registerCommand("shooterRev2", Commands.runOnce(() -> {
-                autoShooterMode = ShooterMode.Rev;
-            m_shooter.setCustomSpeed(24);
-            
-        }));
-                  NamedCommands.registerCommand("shooterRev3", Commands.runOnce(() -> {
-                    autoShooterMode = ShooterMode.Rev;
-            m_shooter.setCustomSpeed(23);
-
-        }));
-                  NamedCommands.registerCommand("shooterRev4", Commands.runOnce(() -> {
-                    autoShooterMode = ShooterMode.Rev;
-            m_shooter.setCustomSpeed(22);
-            
+        NamedCommands.registerCommand("ShooterRev2", Commands.runOnce(() -> {
+            m_shooter.setCustomSpeed(50.0); // RPS for Podium
+            autoShooterMode = ShooterMode.Rev;
         }));
 
-        NamedCommands.registerCommand("resetAll", Commands.runOnce(() -> {
+        // ==========================================
+        // 3. SYSTEM COMMANDS
+        // ==========================================
+        // The Panic Button - Kills all subsystems instantly
+        NamedCommands.registerCommand("StopAll", Commands.runOnce(() -> {
             m_shooter.setCustomSpeed(0);
-            autoIntakeMode= IntakeMode.Idle ;
             autoShooterMode = ShooterMode.Idle;
+            autoIntakeMode = IntakeMode.Idle;
+            autoIntakeDeployMode = IntakeDeployMode.Stow;
         }));
             
                   
@@ -147,6 +161,9 @@ public class RobotContainer {
     }
      public IntakeMode getAutoIntakeMode(){
         return autoIntakeMode;
+    }
+       public IntakeDeployMode getAutoDeployMode(){
+        return autoIntakeDeployMode;
     }
 
     private void configureBindings() {
@@ -183,33 +200,54 @@ public class RobotContainer {
         // Reset the field-centric heading on left bumper press.
         driverJoystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
+        // Toggle auto-rotation on back button
+        driverJoystick.back().onTrue(Commands.runOnce(() -> enableAutoRotation = !enableAutoRotation));
+
         drivetrain.registerTelemetry(logger::telemeterize);
 
-         /* 
-        driverJoystick.y().onTrue(
-            Commands.runOnce(()->LimelightHelpers.setPipelineIndex("limelight", 1))
-            .andThen(
-                drivetrain.applyRequest(() -> {
+        driverJoystick.y().whileTrue(
+            drivetrain.applyRequest(() -> {
                 double rotRate = 0;
-                double tx = LimelightHelpers.getTX("limelight");
-                double currentHeading = drivetrain.getState().Pose.getRotation().getDegrees();
-                double targetHeading = currentHeading -tx;
                 
-                if(LimelightHelpers.getTV("limelight")){
-                    rotRate = -LimelightHelpers.getTX("limelight") * 0.03;
-            
-                    point.withModuleDirection(new Rotation2d());
+                // Check if we want to auto-aim AND if at least one camera sees a tag
+                boolean hasTarget = LimelightHelpers.getTV("limelight-left") || LimelightHelpers.getTV("limelight-right");
+                
+                if (enableAutoRotation && hasTarget) {
+                    // 1. Get the robot's perfectly fused 3D map location
+                    Pose2d currentPose = drivetrain.getState().Pose;
+
+                    // 2. Determine Speaker Location based on Alliance Color
+                    Translation2d speakerLocation;
+                    var alliance = DriverStation.getAlliance();
+                    
+                    if (alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red) {
+                        speakerLocation = new Translation2d(11.9, 4.0); // Red Alliance Hopper
+                    } else {
+                        speakerLocation = new Translation2d(4.62, 4.0);   // Blue Alliance Hopper (Default)
+                    }
+
+                    // 3. Calculate the angle
+                    Translation2d difference = speakerLocation.minus(currentPose.getTranslation());
+                    Rotation2d targetAngle = difference.getAngle();
+
+                    // 4. Calculate how far off the drivetrain's current heading is
+                    double headingErrorRadians = targetAngle.minus(currentPose.getRotation()).getRadians();
+
+                    // 5. Apply a P-loop multiplier to spin the robot to that angle
+                    // (Increase 4.0 if it turns too slowly, decrease if it jitters)
+                    rotRate = headingErrorRadians * 4.0; 
+                    
+                } else {
+                    // If toggle is off or we are blind, let the driver rotate manually
+                    rotRate = -driverJoystick.getRightX() * MaxAngularRate;
                 }
 
-                return drive.withVelocityX( 0)
-                .withVelocityY(0)
-                .withRotationalRate(rotRate * MaxAngularRate);
-
+                // Command the swerve modules!
+                return drive.withVelocityX(-driverJoystick.getLeftY() * MaxSpeed)
+                            .withVelocityY(-driverJoystick.getLeftX() * MaxSpeed)
+                            .withRotationalRate(rotRate);
             })
-            )
-        ).onFalse(Commands.runOnce(() -> LimelightHelpers.setPipelineIndex("limelight", 0))
         );
-        */
 
     }
 

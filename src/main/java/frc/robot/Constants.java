@@ -97,7 +97,7 @@ public final class Constants {
 			// Intake outputs
 			public static final double intakeIntake = 0.4;
 			public static final double intakeReverse = -0.4;
-			public static final double intakeIdle = 0.05;
+			public static final double intakeIdle = 0.0;
 
 			// Outer output amplifier
 			public static final double outerMinFactor = 1.0; // should stay 1
