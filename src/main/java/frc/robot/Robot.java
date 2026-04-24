@@ -230,6 +230,7 @@ if (driverJoystick.y().getAsBoolean()) {
                 // Calculate the required speed using your interpolation map
                 double requiredSpeed = m_robotContainer.m_remote.tyToShooterSpeed.get(currentTY);
                 m_robotContainer.m_shooter.setCustomSpeed(requiredSpeed);
+                SmartDashboard.putNumber("Vision Calculated Distance", currentTY);
                 SmartDashboard.putNumber("Vision Calculated Speed", requiredSpeed);
 
                 // FIRE THE NOTE IMMEDIATELY (REMOVED ALIGNMENT CHECK)
