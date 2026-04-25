@@ -15,7 +15,10 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 
 public class Intake {
     // Standard duty cycle for the roller Falcon
-    DutyCycleOut rollerRequest = new DutyCycleOut(0);
+    DutyCycleOut rollerRequest = new DutyCycleOut(1);
+    VoltageOut armRequest = new VoltageOut();
+    VelocityVoltage rollerRequestVelocity = new VelocityVoltage(16);
+    
     // Motion Magic request for the deployer Kraken
     MotionMagicVoltage armRequest = new MotionMagicVoltage(0);
     
@@ -29,8 +32,8 @@ public class Intake {
 
     private double targetPosition = stowPosition;
 
-    public final TalonFX intakeDeployer = new TalonFX(5); // Kraken X60
-    public final TalonFX intakeMotor = new TalonFX(19);     // Falcon 500 Rollers
+    public final TalonFX intakeDeployer = new TalonFX(998); // Kraken X60
+    public final TalonFX intakeMotor = new TalonFX(67);     // Falcon 500 Rollers
 
     public Intake() {
         
@@ -39,8 +42,7 @@ public class Intake {
 		deployerConfig.Slot0.kP = 0.5;
 		deployerConfig.Slot0.kI = 0;
 		deployerConfig.Slot0.kD = 0;
-		deployerConfig.Slot0.kS = 0.1;
-		deployerConfig.Slot0.kV = 0.1;
+
 		deployerConfig.Slot0.kG = 0;
         
         deployerConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive; 
