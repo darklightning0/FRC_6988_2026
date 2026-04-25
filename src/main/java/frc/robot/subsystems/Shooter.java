@@ -12,10 +12,12 @@ import frc.robot.subsystems.Remote.ShooterMode;
 
 public class Shooter {
     VelocityVoltage mainVelocityReq = new VelocityVoltage(0);
-    VelocityVoltage hopperVelocityReq = new VelocityVoltage(0);
+    VelocityVoltage feedVelocityReq = new VelocityVoltage(0);
 
-    public final TalonFX hopperKraken = new TalonFX(34); 
-    public final TalonFX shooter_Talon = new TalonFX(16);   // Falcon Leader
+    // 4 Motor Setup 
+    public final TalonFX shooterIntakeKraken = new TalonFX(34); // Shooter Intake
+    public final TalonFX hopperBeltFalcon = new TalonFX(35);    // Hopper Belt 
+    public final TalonFX shooter_Talon = new TalonFX(16);       // Falcon Leader
     public final TalonFX shooter_Talon_Slave = new TalonFX(999); // Falcon Follower
 
     private double custom_speed = 0.0;
@@ -27,7 +29,7 @@ public class Shooter {
         TalonFXConfiguration leaderConfig = new TalonFXConfiguration();
         leaderConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
         leaderConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-        leaderConfig.Feedback.SensorToMechanismRatio = 0.3913043478; // 46:18 step-up
+        leaderConfig.Feedback.SensorToMechanismRatio = 0.3913043478; 
         
         leaderConfig.Slot0.kP = 0.38;
         leaderConfig.Slot0.kV = 0.14;
@@ -35,17 +37,18 @@ public class Shooter {
         leaderConfig.CurrentLimits.StatorCurrentLimitEnable = true;
         shooter_Talon.getConfigurator().apply(leaderConfig);
 
-        TalonFXConfiguration hopperConfig = new TalonFXConfiguration();
-        hopperConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-		hopperConfig.CurrentLimits.StatorCurrentLimit = 40;
-        hopperConfig.CurrentLimits.StatorCurrentLimitEnable = true; 
-        hopperKraken.getConfigurator().apply(hopperConfig);
+        // Feed System Config (Intake and Hopper) 
+        TalonFXConfiguration feedConfig = new TalonFXConfiguration();
+        feedConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+		feedConfig.CurrentLimits.StatorCurrentLimit = 40;
+        feedConfig.CurrentLimits.StatorCurrentLimitEnable = true; 
+        shooterIntakeKraken.getConfigurator().apply(feedConfig);
+        hopperBeltFalcon.getConfigurator().apply(feedConfig); 
     }
 
     public void setCustomSpeed(double speed) { this.custom_speed = speed; }
 
 	public double getMotorOutputPercent() {
-        // Returns the actual RPS velocity of the main shooter shaft
         return shooter_Talon.getVelocity().getValueAsDouble(); 
     }
 
@@ -55,25 +58,34 @@ public class Shooter {
     }
 
     public void mainloop(ShooterMode shooterMode, double manualSpeed) {
+        // FIX: Consolidate speed source immediately to prevent fluctuations during state transitions 
         currentTargetSpeed = (this.custom_speed > 0) ? this.custom_speed : manualSpeed;
 
         switch(shooterMode) {
             case Rev:
                 shooter_Talon.setControl(mainVelocityReq.withVelocity(currentTargetSpeed));
-                hopperKraken.setControl(hopperVelocityReq.withVelocity(0)); // Hold ball
+                shooterIntakeKraken.setControl(feedVelocityReq.withVelocity(0)); 
+                hopperBeltFalcon.setControl(feedVelocityReq.withVelocity(0));
                 break;
             case Shoot:
+                // Keep flywheels at the EXACT same speed determined at start of loop 
                 shooter_Talon.setControl(mainVelocityReq.withVelocity(currentTargetSpeed));
-                hopperKraken.setControl(hopperVelocityReq.withVelocity(40)); // Feed ball
+                shooterIntakeKraken.setControl(feedVelocityReq.withVelocity(40)); 
+                hopperBeltFalcon.setControl(feedVelocityReq.withVelocity(40));
                 break;
             case Reverse:
-                shooter_Talon.setControl(mainVelocityReq.withVelocity(-10)); 
-                hopperKraken.setControl(hopperVelocityReq.withVelocity(-20)); // Unjam
+                // Runs all shooter motors inverse
+                // If coming from the "Smart Reverse" logic, currentTargetSpeed will be negative
+                double reverseSpeed = (currentTargetSpeed < 0) ? currentTargetSpeed : -20;
+                shooter_Talon.setControl(mainVelocityReq.withVelocity(reverseSpeed));
+                shooterIntakeKraken.setControl(feedVelocityReq.withVelocity(-30));
+                hopperBeltFalcon.setControl(feedVelocityReq.withVelocity(-30));
                 break;
             case Idle:
             default:
                 shooter_Talon.setControl(mainVelocityReq.withVelocity(0));
-                hopperKraken.setControl(hopperVelocityReq.withVelocity(0));
+                shooterIntakeKraken.setControl(feedVelocityReq.withVelocity(0));
+                hopperBeltFalcon.setControl(feedVelocityReq.withVelocity(0)); 
                 this.custom_speed = 0.0;
                 break;
         }

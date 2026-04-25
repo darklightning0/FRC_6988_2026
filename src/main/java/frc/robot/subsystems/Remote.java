@@ -215,7 +215,7 @@ public class Remote {
 
         if(operatorJoystickDef.isConnected()){
             
-            // 1. Determine Manual Speed
+            // 1. Determine Manual Speed with full -60 to 60 range
             if (operatorJoystickDef.getYButton()) { 
                 manual_shooter_speed = 60; // 60 RPS
             } else if (operatorJoystickDef.getBButton()) { 
@@ -225,21 +225,27 @@ public class Remote {
             } else if (operatorJoystickDef.getXButton()) { 
                 manual_shooter_speed = 30; // 30 RPS
             } else if (Math.abs(operatorJoystickDef.getLeftY()) > 0.1) {
-                // Manual stick revving (maps -1.0 to 1.0 -> 0 to 60 RPS)
-                manual_shooter_speed = Math.abs(operatorJoystickDef.getLeftY()) * 60.0;
+                // Map stick -1.0 to 1.0 -> -60 to 60 RPS
+                // Note: Joysticks are usually negative-up, so we negate it
+                manual_shooter_speed = -operatorJoystickDef.getLeftY() * 60.0;
+            } else {
+                manual_shooter_speed = 0.0;
             }
 
-            // 2. Determine State
+            // 2. Determine Shooter State
             boolean isPresetPressed = operatorJoystickDef.getYButton() || operatorJoystickDef.getBButton() || 
                                       operatorJoystickDef.getAButton() || operatorJoystickDef.getXButton() ||
                                       Math.abs(operatorJoystickDef.getLeftY()) > 0.1;
 
             if (operatorJoystickDef.getLeftStickButton()) {
-                shooter_mode = ShooterMode.Shoot; // Feed the ball
+                // If speed is negative and we click shoot, run full inverse
+                if (manual_shooter_speed < 0) {
+                    shooter_mode = ShooterMode.Reverse;
+                } else {
+                    shooter_mode = ShooterMode.Shoot; // Normal forward fire
+                }
             } else if (isPresetPressed) {
-                shooter_mode = ShooterMode.Rev;   // Just spin flywheels
-            } else if (operatorJoystickDef.getRightY() > 0.2) {
-                shooter_mode = ShooterMode.Reverse; // Un-jam
+                shooter_mode = ShooterMode.Rev; // Just spin flywheels at the target speed
             } else {
                 shooter_mode = ShooterMode.Idle;
             }
