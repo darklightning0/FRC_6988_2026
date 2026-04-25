@@ -334,7 +334,7 @@ The real-time field visualization is powered by the `SwerveDrivePoseEstimator` i
 
 ## 6. Patch Notes & Recent Updates
 
-### v2.0 - February 2026 (Current Build)
+### v2.0 - April 2026 (Current Build)
 
 #### [FIX] Manual Velocity Drop / Jitter
 * **Bug:** When the operator held a preset button (e.g., 60 RPS) and clicked the Left Stick to fire, the speed would momentarily drop or change due to state-transition latency.
@@ -404,36 +404,3 @@ The real-time field visualization is powered by the `SwerveDrivePoseEstimator` i
   - Gyro angle + module positions → calculated robot pose
   - Pose published to SmartDashboard as `Field` object
 * **Benefit:** See your robot moving and rotating on the field in AdvantageScope in real-time. Perfect for autonomous debugging and visualizing path following.
-
----
-
-## 🔧 Contact & Support
-
-For questions about this codebase or subsystem tuning, contact the FRC 6988 programming team.
-
-**Team:** FRC 6988  
-**Year:** 2026  
-**Last Updated:** February 2026
-
----
-
-## 4. The Programmer's Pre-Match Tuning Guide
-Before hitting the carpet at competition, the following exact values must be verified and tuned.
-
-### A. The Interpolation Map (`Remote.java`)
-Because the code uses 3D map geometry instead of Limelight crosshairs, the shooting map operates on **Meters to RPS**.
-* Find the `tyToShooterSpeed` map in the `Remote()` constructor.
-* Place the robot on the field at known distances (e.g., 1.5m, 3.0m, 5.0m). Read `Vision/True Distance (M)` on SmartDashboard.
-* Tune the RPS until the shot hits perfectly, and update the code:
-  `tyToShooterSpeed.put(1.5, 35.0); // 1.5 meters = 35 RPS`
-
-### B. Limelight Offset Configuration (Web GUI)
-The Java code assumes the Limelights know they are angled. If the physical Limelights are reset or swapped, you MUST update their internal web dashboards (`limelight-left.local:5801`):
-* Tab: Standard 3D / MegaTag
-* Left Camera **Yaw**: `18`
-* Right Camera **Yaw**: `-18`
-* *Verification:* Spin the physical robot in place. The AdvantageScope 3D robot must spin cleanly without "orbiting." If it orbits, slightly adjust the Yaw numbers.
-
-### C. Intake PID & Limits (`Intake.java`)
-* **`DEPLOY_POSITION`:** Currently set to `0.25` (1/4 of a full arm rotation based on the 9.14 ratio). If the arm does not fully reach the bumper, manually jog it down and read `Intake/Arm Actual Position` on SmartDashboard to find the true limit, then update this constant.
-* **`kG` (Gravity Feedforward):** Set `kP` to 0 in Tuner X. Pull the arm horizontally and increase `kG` until it floats perfectly against gravity, then update `deployerConfig.Slot0.kG` in the code.
