@@ -51,14 +51,14 @@ public class Shooter {
 	public double getMotorOutputPercent() {
         return shooter_Talon.getVelocity().getValueAsDouble(); 
     }
-
+    //kullanilmiyo aq bu da kalsin yine de efe diddykulak
     public boolean isAtSpeed() {
         double currentSpeed = shooter_Talon.getVelocity().getValueAsDouble();
         return Math.abs(currentSpeed - currentTargetSpeed) < 2.0 && currentTargetSpeed > 5.0; 
     }
 
     public void mainloop(ShooterMode shooterMode, double manualSpeed) {
-        // FIX: Consolidate speed source immediately to prevent fluctuations during state transitions 
+        // custom speed overridei var mi yok mu, manuel otoyu ayarliyo
         currentTargetSpeed = (this.custom_speed > 0) ? this.custom_speed : manualSpeed;
 
         switch(shooterMode) {
@@ -68,15 +68,14 @@ public class Shooter {
                 hopperBeltFalcon.setControl(feedVelocityReq.withVelocity(0));
                 break;
             case Shoot:
-                // Keep flywheels at the EXACT same speed determined at start of loop 
+               
                 shooter_Talon.setControl(mainVelocityReq.withVelocity(currentTargetSpeed));
                 shooterIntakeKraken.setControl(feedVelocityReq.withVelocity(40)); 
                 hopperBeltFalcon.setControl(feedVelocityReq.withVelocity(40));
                 break;
             case Reverse:
-                // Runs all shooter motors inverse
-                // If coming from the "Smart Reverse" logic, currentTargetSpeed will be negative
-                double reverseSpeed = (currentTargetSpeed < 0) ? currentTargetSpeed : -20;
+            
+                double reverseSpeed = -20;
                 shooter_Talon.setControl(mainVelocityReq.withVelocity(reverseSpeed));
                 shooterIntakeKraken.setControl(feedVelocityReq.withVelocity(-30));
                 hopperBeltFalcon.setControl(feedVelocityReq.withVelocity(-30));

@@ -77,9 +77,9 @@ public class Remote {
     // restricted to this class itself
     public Remote() {
 
-        tyToShooterSpeed.put(1.5, 30.0); // Subwoofer
-        tyToShooterSpeed.put(3.0, 45.0); // Mid-range
-        tyToShooterSpeed.put(5.0, 60.0); // Far shot
+        tyToShooterSpeed.put(1.5, 30.0); 
+        tyToShooterSpeed.put(3.0, 45.0); 
+        tyToShooterSpeed.put(5.0, 60.0); 
 
 
     }
@@ -174,40 +174,32 @@ public class Remote {
 
         inverseDriveDirection();
 
-        // ==========================================
-        // INTAKE ROLLERS (POV)
-        // ==========================================
+     
         if (operatorJoystickDef.isConnected()) {
-            if (operatorJoystickDef.getPOV() == 0) { // UP on D-Pad
+            if (operatorJoystickDef.getPOV() == 0) { // up = intake roll in
                 intake_mode = IntakeMode.Intake;
-            } else if (operatorJoystickDef.getPOV() == 180) { // DOWN on D-Pad
+            } else if (operatorJoystickDef.getPOV() == 180) { // down = intake roll out
                 intake_mode = IntakeMode.Reverse;
             } else {
                 intake_mode = IntakeMode.Idle;
             }
         }
 
-        // ==========================================
-        // INTAKE ARM: AUTOMATIC DEPLOY/STOW (Right Stick Click)
-        // ==========================================
-        if(operatorJoystickDef.getRightStickButtonPressed()){
-            // If the arm is currently closer to the STOW position (0.0)...
-            // Use half of DEPLOY_POSITION as the threshold
-            double deployThreshold = robotContainer.m_intake.getDeployPosition() * 0.5;
+        if(operatorJoystickDef.getLeftStickButtonPressed()){
+
+            double deployThreshold = robotContainer.m_intake.getStowPosition() * 0.5;
             if(robotContainer.m_intake.intakeDeployer.getPosition().getValueAsDouble() < deployThreshold) {
-                intake_deploy_mode = IntakeDeployMode.Deploy; // ...then Deploy it.
+                intake_deploy_mode = IntakeDeployMode.Deploy; 
             } else {
-                intake_deploy_mode = IntakeDeployMode.Stow;  // ...otherwise, Stow it.
+                intake_deploy_mode = IntakeDeployMode.Stow;  
             }
         }
 
-        // ==========================================
-        // INTAKE ARM: MANUAL CONTROL (Now on Right Joystick Y-Axis)
-        // ==========================================
-        double rightY = operatorJoystickDef.getRightY();
-        if (rightY < -0.2) { // Pushing UP on right stick
+     
+        double rightY = operatorJoystickDef.getLeftY();
+        if (rightY < -0.2) { // arm pushing up
             intake_deploy_mode = IntakeDeployMode.ManualUP;
-        } else if (rightY > 0.2) { // Pulling DOWN on right stick
+        } else if (rightY > 0.2) { // arm going down
             intake_deploy_mode = IntakeDeployMode.ManualDOWN;
         } else if (intake_deploy_mode != IntakeDeployMode.Deploy && intake_deploy_mode != IntakeDeployMode.Stow) {
             intake_deploy_mode = IntakeDeployMode.Idle;
@@ -217,35 +209,35 @@ public class Remote {
             
             // 1. Determine Manual Speed with full -60 to 60 range
             if (operatorJoystickDef.getYButton()) { 
-                manual_shooter_speed = 60; // 60 RPS
+                manual_shooter_speed = 50; 
             } else if (operatorJoystickDef.getBButton()) { 
-                manual_shooter_speed = 50; // 50 RPS
+                manual_shooter_speed = 40; 
             } else if (operatorJoystickDef.getAButton()) { 
-                manual_shooter_speed = 40; // 40 RPS
+                manual_shooter_speed = 30; 
             } else if (operatorJoystickDef.getXButton()) { 
-                manual_shooter_speed = 30; // 30 RPS
-            } else if (Math.abs(operatorJoystickDef.getLeftY()) > 0.1) {
-                // Map stick -1.0 to 1.0 -> -60 to 60 RPS
-                // Note: Joysticks are usually negative-up, so we negate it
-                manual_shooter_speed = -operatorJoystickDef.getLeftY() * 60.0;
+                manual_shooter_speed = 20; 
+            } else if (Math.abs(operatorJoystickDef.getRightY()) > 0.1) {
+        
+                manual_shooter_speed = -operatorJoystickDef.getRightY() * 50.0;
             } else {
                 manual_shooter_speed = 0.0;
             }
 
-            // 2. Determine Shooter State
+            //shoter state determine
             boolean isPresetPressed = operatorJoystickDef.getYButton() || operatorJoystickDef.getBButton() || 
                                       operatorJoystickDef.getAButton() || operatorJoystickDef.getXButton() ||
-                                      Math.abs(operatorJoystickDef.getLeftY()) > 0.1;
+                                      Math.abs(operatorJoystickDef.getRightY()) > 0.1;
 
-            if (operatorJoystickDef.getLeftStickButton()) {
-                // If speed is negative and we click shoot, run full inverse
+            if (operatorJoystickDef.getRightStickButton()) {
+         
                 if (manual_shooter_speed < 0) {
                     shooter_mode = ShooterMode.Reverse;
                 } else {
                     shooter_mode = ShooterMode.Shoot; // Normal forward fire
                 }
-            } else if (isPresetPressed) {
-                shooter_mode = ShooterMode.Rev; // Just spin flywheels at the target speed
+            } 
+            else if (isPresetPressed) {
+                shooter_mode = ShooterMode.Rev; // spin flywheels at the target speed
             } else {
                 shooter_mode = ShooterMode.Idle;
             }

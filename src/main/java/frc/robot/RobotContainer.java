@@ -44,12 +44,15 @@ import frc.robot.subsystems.Remote.IntakeDeployMode;
 
 public class RobotContainer {
     private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
-    private double MaxAngularRate = RotationsPerSecond.of(0.35).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
+    private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 
 
     /* Setting up bindings for necessary control of the swerve drive platform */
     private final SwerveRequest.RobotCentric drive = new SwerveRequest.RobotCentric()
             .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
+    private final SwerveRequest.FieldCentricFacingAngle driveFacingAngle = new SwerveRequest.FieldCentricFacingAngle()
+            .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.05)
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
@@ -70,7 +73,7 @@ public class RobotContainer {
     private ShooterMode autoShooterMode= ShooterMode.Idle;
     private IntakeMode autoIntakeMode = IntakeMode.Idle;
     private IntakeDeployMode autoIntakeDeployMode = IntakeDeployMode.Stow;
-    public boolean enableAutoRotation = true;
+
 
     public RobotContainer() {
         
@@ -96,7 +99,7 @@ public class RobotContainer {
             autoIntakeMode = IntakeMode.Reverse;
         }));
 
-        // COMBOS (Highly recommended for PathPlanner)
+        //dual commands
         NamedCommands.registerCommand("IntakeFull", Commands.runOnce(() -> {
             autoIntakeDeployMode = IntakeDeployMode.Deploy; 
             autoIntakeMode = IntakeMode.Intake;
@@ -135,10 +138,7 @@ public class RobotContainer {
             autoShooterMode = ShooterMode.Rev;
         }));
 
-        // ==========================================
-        // 3. SYSTEM COMMANDS
-        // ==========================================
-        // The Panic Button - Kills all subsystems instantly
+     
         NamedCommands.registerCommand("StopAll", Commands.runOnce(() -> {
             m_shooter.setCustomSpeed(0);
             autoShooterMode = ShooterMode.Idle;
@@ -201,51 +201,31 @@ public class RobotContainer {
         driverJoystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
         // Toggle auto-rotation on back button
-        driverJoystick.back().onTrue(Commands.runOnce(() -> enableAutoRotation = !enableAutoRotation));
+  
 
         drivetrain.registerTelemetry(logger::telemeterize);
 
         driverJoystick.y().whileTrue(
             drivetrain.applyRequest(() -> {
-                double rotRate = 0;
+                Pose2d currentPose = drivetrain.getState().Pose;
+
+                Translation2d speakerLocation;
+                var alliance = DriverStation.getAlliance();
                 
-                // Check if we want to auto-aim AND if at least one camera sees a tag
-                boolean hasTarget = LimelightHelpers.getTV("limelight-left") || LimelightHelpers.getTV("limelight-right");
-                
-                if (enableAutoRotation && hasTarget) {
-                    // 1. Get the robot's perfectly fused 3D map location
-                    Pose2d currentPose = drivetrain.getState().Pose;
-
-                    // 2. Determine Speaker Location based on Alliance Color
-                    Translation2d speakerLocation;
-                    var alliance = DriverStation.getAlliance();
-                    
-                    if (alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red) {
-                        speakerLocation = new Translation2d(11.9, 4.0); // Red Alliance Hopper
-                    } else {
-                        speakerLocation = new Translation2d(4.62, 4.0);   // Blue Alliance Hopper (Default)
-                    }
-
-                    // 3. Calculate the angle
-                    Translation2d difference = speakerLocation.minus(currentPose.getTranslation());
-                    Rotation2d targetAngle = difference.getAngle();
-
-                    // 4. Calculate how far off the drivetrain's current heading is
-                    double headingErrorRadians = targetAngle.minus(currentPose.getRotation()).getRadians();
-
-                    // 5. Apply a P-loop multiplier to spin the robot to that angle
-                    // (Increase 4.0 if it turns too slowly, decrease if it jitters)
-                    rotRate = headingErrorRadians * 4.0; 
-                    
+                if (alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red) {
+                    speakerLocation = new Translation2d(11.9, 4.0); //red alliance kule
                 } else {
-                    // If toggle is off or we are blind, let the driver rotate manually
-                    rotRate = -driverJoystick.getRightX() * MaxAngularRate;
+                    speakerLocation = new Translation2d(4.62, 4.0);   //blue alliance kule
                 }
 
-                // Command the swerve modules!
-                return drive.withVelocityX(-driverJoystick.getLeftY() * MaxSpeed)
-                            .withVelocityY(-driverJoystick.getLeftX() * MaxSpeed)
-                            .withRotationalRate(rotRate);
+                // calc difference in x and y values
+                Translation2d difference = speakerLocation.minus(currentPose.getTranslation());
+
+                Rotation2d targetAngle = difference.getAngle();
+                
+                return driveFacingAngle.withVelocityX(-driverJoystick.getLeftY() * MaxSpeed)
+                        .withVelocityY(-driverJoystick.getLeftX() * MaxSpeed)
+                        .withTargetDirection(targetAngle);
             })
         );
 

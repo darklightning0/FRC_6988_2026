@@ -18,11 +18,12 @@ import frc.robot.subsystems.Remote.IntakeDeployMode;
 import edu.wpi.first.cameraserver.CameraServer;
 
 import static frc.robot.Constants.ControllerConstants.driverJoystick;
+import static frc.robot.Constants.ControllerConstants.operatorJoystick;
 
 import com.ctre.phoenix6.SignalLogger;
 
 // AdvantageScope visualization imports
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -36,7 +37,7 @@ public class Robot extends TimedRobot {
 
   // AdvantageScope Field Visualization
   private final Field2d m_field = new Field2d();
-  private SwerveDrivePoseEstimator m_poseEstimator;
+
 
   public Robot() {
     m_robotContainer = new RobotContainer();
@@ -45,16 +46,12 @@ public class Robot extends TimedRobot {
   @Override
 	public void robotInit() {
 		CameraServer.startAutomaticCapture();
-    LimelightHelpers.setPipelineIndex("limelight",1);
+
     m_robotContainer.pigeon2.setYaw(0.0);
-    m_robotContainer.m_intake.resetDeployerEncoder();
+    m_robotContainer.m_intake.resetStartEncoder();
 
     // Initialize Pose Estimator for AdvantageScope
-    m_poseEstimator = new SwerveDrivePoseEstimator(
-        m_robotContainer.drivetrain.getKinematics(),
-        Rotation2d.fromDegrees(m_robotContainer.pigeon2.getYaw().getValueAsDouble()),        m_robotContainer.drivetrain.getState().ModulePositions,
-        new Pose2d() // Start at 0,0
-    );
+    
 
     SignalLogger.start();
     SignalLogger.setPath("/home/lvuser/logs/");
@@ -67,28 +64,15 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
 
-    // 1. Get Current Gyro Angle
-    Rotation2d gyroAngle = Rotation2d.fromDegrees(m_robotContainer.pigeon2.getYaw().getValueAsDouble());
 
-    // 2. Get Module Positions from the Drivetrain
-    var modulePositions = m_robotContainer.drivetrain.getState().ModulePositions;
-
-    // 3. Update the Pose Estimator
-    m_poseEstimator.update(gyroAngle, modulePositions);
-
-    // 4. Update the Field Object with the calculated pose
-    m_field.setRobotPose(m_poseEstimator.getEstimatedPosition());
-
-    // ========================================================
-    // MEGATAG 2 DUAL CAMERA FUSION
-    // ========================================================
-    // MUST FEED GYRO TO LIMELIGHT FIRST FOR MEGATAG2 TO WORK!
+  
     double currentYaw = m_robotContainer.pigeon2.getYaw().getValueAsDouble();
     LimelightHelpers.SetRobotOrientation("limelight-left", currentYaw, 0, 0, 0, 0, 0);
     LimelightHelpers.SetRobotOrientation("limelight-right", currentYaw, 0, 0, 0, 0, 0);
 
     // 1. Read Left Camera
     LimelightHelpers.PoseEstimate mt2Left = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-left");
+
     if (mt2Left != null && mt2Left.tagCount > 0) {
         // Tell the swerve drivetrain where the camera thinks we are
         m_robotContainer.drivetrain.addVisionMeasurement(mt2Left.pose, mt2Left.timestampSeconds);
@@ -226,7 +210,7 @@ public class Robot extends TimedRobot {
     // ==========================================
     // Check if the operator is holding the Y button to auto-align and shoot
     // Check if the operator is holding the Y button to auto-align and shoot
-    if (driverJoystick.y().getAsBoolean()) {
+    if (operatorJoystick.rightBumper().getAsBoolean()) {
         
         // 1. Get our 3D location
         Pose2d currentPose = m_robotContainer.drivetrain.getState().Pose;
@@ -240,37 +224,37 @@ public class Robot extends TimedRobot {
             targetLocation = new Translation2d(4.62, 4.0); // Blue Target
         }
 
-        // 3. Calculate true distance in meters!
-        double distanceMeters = targetLocation.getDistance(currentPose.getTranslation());
-        SmartDashboard.putNumber("Vision/True Distance (M)", distanceMeters);
 
-        // 4. Look up the required speed based on true distance
+        double distanceMeters = targetLocation.getDistance(currentPose.getTranslation());
+        SmartDashboard.putNumber("Vision/True Distance In Meters", distanceMeters);
+
+        //interpolation map dist vs velc
         double requiredSpeed = m_robotContainer.m_remote.tyToShooterSpeed.get(distanceMeters);
         m_robotContainer.m_shooter.setCustomSpeed(requiredSpeed);
 
-        // 5. Calculate our aiming error using geometry (THESE WERE THE MISSING LINES!)
+
         Translation2d difference = targetLocation.minus(currentPose.getTranslation());
         Rotation2d targetAngle = difference.getAngle();
         double aimErrorDegrees = Math.toDegrees(Math.abs(targetAngle.minus(currentPose.getRotation()).getRadians()));
         
-        // SAFETY CHECK: Are we at speed AND within 3 degrees of the target?
-        boolean aimed = aimErrorDegrees < 3.0 || !m_robotContainer.enableAutoRotation;
+        // if angle is tolerable allow shoot
+        boolean aimed = aimErrorDegrees < 4.0 ;
 
         if (m_robotContainer.m_shooter.isAtSpeed() && aimed) {
-            m_robotContainer.m_shooter.mainloop(Remote.ShooterMode.Shoot, 0); // FIRE!
+            m_robotContainer.m_shooter.mainloop(Remote.ShooterMode.Shoot, 0); // FIRLAT AMK
         } else {
-            m_robotContainer.m_shooter.mainloop(Remote.ShooterMode.Rev, 0);   // WAIT!
+            m_robotContainer.m_shooter.mainloop(Remote.ShooterMode.Rev, 0);   // DUR LAN YA AIMLI DEGIL YA DA HIZ PROBLEM
         }
 
     } else {
-        // Y is NOT held. Run manual controls!
+        //if nothing is pressed use normal yani
         m_robotContainer.m_shooter.setCustomSpeed(0.0); 
         m_robotContainer.m_shooter.mainloop(shooterMode, m_robotContainer.m_remote.getManualShooterSpeed());
     }
 
 
 
-    //Intake
+    //Intake reset encoder if necessary mango
     m_robotContainer.m_intake.mainloop(intakeMode, intakeDeployMode);
     if (m_robotContainer.m_remote.getHomeButton()) {
         m_robotContainer.m_intake.resetDeployerEncoder();
