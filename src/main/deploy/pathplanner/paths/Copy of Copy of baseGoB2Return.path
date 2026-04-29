@@ -1,0 +1,105 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.683,
+        "y": 5.52
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.89086755128039,
+        "y": 5.658892336450555
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.9372854128649637,
+        "y": 5.886239963503649
+      },
+      "prevControl": {
+        "x": 3.6872866366165926,
+        "y": 5.885457739547928
+      },
+      "nextControl": {
+        "x": 4.187284189113335,
+        "y": 5.88702218745937
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.111630246350366,
+        "y": 5.886239963503649
+      },
+      "prevControl": {
+        "x": 6.861630246350366,
+        "y": 5.886239963503649
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.9274013157894738,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 1.6076809210526317,
+      "rotationDegrees": 0.0
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 1.1399345012626254,
+      "maxWaypointRelativePos": 1.378472222222222,
+      "constraints": {
+        "maxVelocity": 1.0,
+        "maxAcceleration": 1.0,
+        "maxAngularVelocity": 300.0,
+        "maxAngularAcceleration": 120.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "IntakeFull",
+      "waypointRelativePos": 1.5947758838383839,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "IntakeFull"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 4.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 300.0,
+    "maxAngularAcceleration": 120.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0.0,
+    "rotation": 0.0
+  },
+  "reversed": false,
+  "folder": "B2Alternate",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 141.5
+  },
+  "useDefaultConstraints": false
+}

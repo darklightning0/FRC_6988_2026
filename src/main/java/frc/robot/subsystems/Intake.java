@@ -43,9 +43,7 @@ public class Intake {
 		deployerConfig.Slot0.kV = 0.1;
 		deployerConfig.Slot0.kG = 0;
         
-        deployerConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive; // DEGISTIR BUNU GEREKIRSE
-
-
+        deployerConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive; 
 		deployerConfig.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
 		deployerConfig.Feedback.SensorToMechanismRatio = DEPLOYER_SENSOR_TO_MECHANISM_RATIO;
 		deployerConfig.Feedback.RotorToSensorRatio = DEPLOYER_ROTOR_TO_SENSOR_RATIO;

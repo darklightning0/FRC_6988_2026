@@ -1,0 +1,97 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "midGoIntakeB3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "midTakeIntakeB3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "midIntakeBump1B3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "overBumpB3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "bumpB3Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShooterRev1"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.2
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IntakeStow"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShooterShoot"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 5.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "StopAll"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "midGoB3Return"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "midTakeIntakeB3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "midIntakeBump1B3"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

@@ -1,0 +1,73 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "baseBallGoB2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "baseBallShootB2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShooterRev1"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.2
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShooterShoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IntakeStow"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 5.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "StopAll"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Copy of Copy of baseGoB2Return"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "baseBumperOverTrenchReturn"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

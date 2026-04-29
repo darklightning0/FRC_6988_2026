@@ -77,10 +77,7 @@ public class RobotContainer {
 
     public RobotContainer() {
         
-        // ==========================================
-        // 1. INTAKE COMMANDS
-        // ==========================================
-        // Arm Movement Only
+  
         NamedCommands.registerCommand("IntakeDeploy", Commands.runOnce(() -> {
             autoIntakeDeployMode = IntakeDeployMode.Deploy; 
         }));
@@ -88,7 +85,7 @@ public class RobotContainer {
             autoIntakeDeployMode = IntakeDeployMode.Stow;
         }));
 
-        // Roller Movement Only
+ 
         NamedCommands.registerCommand("IntakeStart", Commands.runOnce(() -> {
             autoIntakeMode = IntakeMode.Intake;
         }));
@@ -99,7 +96,7 @@ public class RobotContainer {
             autoIntakeMode = IntakeMode.Reverse;
         }));
 
-        //dual commands
+        //dual command
         NamedCommands.registerCommand("IntakeFull", Commands.runOnce(() -> {
             autoIntakeDeployMode = IntakeDeployMode.Deploy; 
             autoIntakeMode = IntakeMode.Intake;
@@ -109,10 +106,7 @@ public class RobotContainer {
             autoIntakeMode = IntakeMode.Idle;
         }));
 
-        // ==========================================
-        // 2. SHOOTER COMMANDS
-        // ==========================================
-        // Firing sequence
+    
         NamedCommands.registerCommand("ShooterRevVision", Commands.runOnce(() -> {
             // Tells the shooter to rev based on the Limelight distance!
             m_shooter.setCustomSpeed(0); // 0 triggers the vision math in Robot.java
@@ -128,13 +122,13 @@ public class RobotContainer {
             autoShooterMode = ShooterMode.Reverse;
         }));
 
-        // Preset RPMs (If you want to shoot blind from specific spots without vision)
+
         NamedCommands.registerCommand("ShooterRev1", Commands.runOnce(() -> {
-            m_shooter.setCustomSpeed(35.0); // RPS for Subwoofer
+            m_shooter.setCustomSpeed(35.0); 
             autoShooterMode = ShooterMode.Rev;
         }));
         NamedCommands.registerCommand("ShooterRev2", Commands.runOnce(() -> {
-            m_shooter.setCustomSpeed(50.0); // RPS for Podium
+            m_shooter.setCustomSpeed(50.0); 
             autoShooterMode = ShooterMode.Rev;
         }));
 

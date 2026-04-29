@@ -1,0 +1,95 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 7.719,
+        "y": 4.767
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 7.768473090277778,
+        "y": 5.87530982349537
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.6878676215277775,
+        "y": 7.187914134837963
+      },
+      "prevControl": {
+        "x": 7.1072730702737825,
+        "y": 6.965461444266529
+      },
+      "nextControl": {
+        "x": 6.1450716869212965,
+        "y": 7.475813151041668
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.347963469328704,
+        "y": 7.355680266203703
+      },
+      "prevControl": {
+        "x": 3.7687894241898157,
+        "y": 7.490903573495371
+      },
+      "nextControl": {
+        "x": 3.1099493801845215,
+        "y": 7.279199593031555
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.683,
+        "y": 5.52
+      },
+      "prevControl": {
+        "x": 2.5946199958268896,
+        "y": 7.119322193346178
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.0192945075757573,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 1.9590139678030298,
+      "rotationDegrees": 0.0
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 2.5,
+    "maxAngularVelocity": 180.0,
+    "maxAngularAcceleration": 100.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 1.5,
+    "rotation": 133.02185604562098
+  },
+  "reversed": false,
+  "folder": "B1",
+  "idealStartingState": {
+    "velocity": 0.0,
+    "rotation": -90.0
+  },
+  "useDefaultConstraints": false
+}

@@ -37,7 +37,6 @@ public class Shooter {
         leaderConfig.CurrentLimits.StatorCurrentLimitEnable = true;
         shooter_Talon.getConfigurator().apply(leaderConfig);
 
-        // Feed System Config (Intake and Hopper) 
         TalonFXConfiguration feedConfig = new TalonFXConfiguration();
         feedConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 		feedConfig.CurrentLimits.StatorCurrentLimit = 40;

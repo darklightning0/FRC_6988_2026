@@ -184,19 +184,18 @@ public class Robot extends TimedRobot {
     ClimbMode climbMode = m_robotContainer.m_remote.getClimbMode();
     HoodMode hoodMode = m_robotContainer.m_remote.getHoodMode();
 
-		// 1. Log Mechanism Modes (Strings)
     SmartDashboard.putString("input_intake_mode", intakeMode.toString());
     SmartDashboard.putString("input_shooter_mode", shooterMode.toString());
     SmartDashboard.putString("input_climb_mode", climbMode.toString());
     SmartDashboard.putString("input_hood_mode", hoodMode.toString());
 
 
-    // 2. Log Percent Outputs (Numbers) for AdvantageScope
+ 
 
     SmartDashboard.putNumber("input_shooter_percent", m_robotContainer.m_shooter.getMotorOutputPercent());
  
 
-    // 3. Log Gyro (Pigeon 2)
+ 
     SmartDashboard.putNumber("input_gyro_degrees", m_robotContainer.pigeon2.getYaw().getValueAsDouble()); 
 
 
@@ -205,17 +204,13 @@ public class Robot extends TimedRobot {
 
   
 
-    // ==========================================
-    // 2. SHOOTER CONTROL (Auto-Interpolation vs Manual)
-    // ==========================================
-    // Check if the operator is holding the Y button to auto-align and shoot
-    // Check if the operator is holding the Y button to auto-align and shoot
+  
     if (operatorJoystick.rightBumper().getAsBoolean()) {
         
         // 1. Get our 3D location
         Pose2d currentPose = m_robotContainer.drivetrain.getState().Pose;
         
-        // 2. MATCH ROBOT CONTAINER: Determine target based on Alliance
+  
         Translation2d targetLocation;
         var alliance = edu.wpi.first.wpilibj.DriverStation.getAlliance();
         if (alliance.isPresent() && alliance.get() == edu.wpi.first.wpilibj.DriverStation.Alliance.Red) {
@@ -238,12 +233,12 @@ public class Robot extends TimedRobot {
         double aimErrorDegrees = Math.toDegrees(Math.abs(targetAngle.minus(currentPose.getRotation()).getRadians()));
         
         // if angle is tolerable allow shoot
-        boolean aimed = aimErrorDegrees < 4.0 ;
+        boolean aimed = aimErrorDegrees < 5.0 ;
 
         if (m_robotContainer.m_shooter.isAtSpeed() && aimed) {
-            m_robotContainer.m_shooter.mainloop(Remote.ShooterMode.Shoot, 0); // FIRLAT AMK
+            m_robotContainer.m_shooter.mainloop(Remote.ShooterMode.Shoot, 0); // shoot
         } else {
-            m_robotContainer.m_shooter.mainloop(Remote.ShooterMode.Rev, 0);   // DUR LAN YA AIMLI DEGIL YA DA HIZ PROBLEM
+            m_robotContainer.m_shooter.mainloop(Remote.ShooterMode.Rev, 0);   // if aim error or speed not readhy
         }
 
     } else {

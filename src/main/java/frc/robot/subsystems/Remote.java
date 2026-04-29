@@ -207,7 +207,7 @@ public class Remote {
 
         if(operatorJoystickDef.isConnected()){
             
-            // 1. Determine Manual Speed with full -60 to 60 range
+   
             if (operatorJoystickDef.getYButton()) { 
                 manual_shooter_speed = 50; 
             } else if (operatorJoystickDef.getBButton()) { 
