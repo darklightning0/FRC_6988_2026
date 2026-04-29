@@ -44,7 +44,16 @@
       "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.3408560311284025,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 0.8607003891050561,
+      "rotationDegrees": 0.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -58,13 +67,13 @@
   },
   "goalEndState": {
     "velocity": 1.0,
-    "rotation": 141.5
+    "rotation": -38.5
   },
   "reversed": false,
   "folder": "B2",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -89.516
+    "rotation": 91.5
   },
   "useDefaultConstraints": false
 }

@@ -29,8 +29,8 @@ public class Intake {
 
     private double targetPosition = stowPosition;
 
-    public final TalonFX intakeDeployer = new TalonFX(998); // Kraken X60
-    public final TalonFX intakeMotor = new TalonFX(67);     // Falcon 500 Rollers
+    public final TalonFX intakeDeployer = new TalonFX(5); // Kraken X60
+    public final TalonFX intakeMotor = new TalonFX(19);     // Falcon 500 Rollers
 
     public Intake() {
         

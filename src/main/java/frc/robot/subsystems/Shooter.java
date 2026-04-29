@@ -15,16 +15,16 @@ public class Shooter {
     VelocityVoltage feedVelocityReq = new VelocityVoltage(0);
 
     // 4 Motor Setup 
-    public final TalonFX shooterIntakeKraken = new TalonFX(34); // Shooter Intake
-    public final TalonFX hopperBeltFalcon = new TalonFX(35);    // Hopper Belt 
-    public final TalonFX shooter_Talon = new TalonFX(16);       // Falcon Leader
-    public final TalonFX shooter_Talon_Slave = new TalonFX(999); // Falcon Follower
+    public final TalonFX shooterIntakeKraken = new TalonFX(2); // Shooter Intake
+    public final TalonFX hopperBeltFalcon = new TalonFX(3);    // Hopper Belt 
+    public final TalonFX shooter_Talon = new TalonFX(7);       // Falcon Leader
+    public final TalonFX shooter_Talon_Slave = new TalonFX(4); // Falcon Follower
 
     private double custom_speed = 0.0;
     private double currentTargetSpeed = 0.0;
 
     public Shooter() {
-        shooter_Talon_Slave.setControl(new Follower(16, MotorAlignmentValue.Opposed));
+        shooter_Talon_Slave.setControl(new Follower(7, MotorAlignmentValue.Opposed));
         
         TalonFXConfiguration leaderConfig = new TalonFXConfiguration();
         leaderConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
@@ -50,7 +50,7 @@ public class Shooter {
 	public double getMotorOutputPercent() {
         return shooter_Talon.getVelocity().getValueAsDouble(); 
     }
-    //kullanilmiyo aq bu da kalsin yine de efe diddykulak
+    //kullanilmiyo aq bu da kalsin yine de
     public boolean isAtSpeed() {
         double currentSpeed = shooter_Talon.getVelocity().getValueAsDouble();
         return Math.abs(currentSpeed - currentTargetSpeed) < 2.0 && currentTargetSpeed > 5.0; 

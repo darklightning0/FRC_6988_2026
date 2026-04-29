@@ -47,51 +47,11 @@ public final class Constants {
 	// SHOOTER
 
 	public static class SubsystemConstants {
-		public static class TalonIDs {
-			public static class FX {
-				public static final int Intake_Arm = 24; // Intake arm motor
-				public static final int leader_climb = 23;
-				public static final int follower_climb = 22;  
-				public static final int shooter_belt = 16; // Shooter left
-
-
-			}
-
-			public static class SRX {
-				public static final int Intake_Pulley = 14; //Intake Front Wheels
-				public static final int shooter_M_left = 18; // Big elevator motor
-				public static final int shooter_M_right = 17; // Small elevator motor
-				public static final int shooter_belt = 16; // Shooter left
-				public static final int shooter_redline = 15; // Shooter left
-				public static final int hoodMotor = 20;
-			}
-
-			public static class Spark {
-				public static final int Intake_Left = 23;
-				public static final int Intake_Right = 22;
-			}
-		}
-
-		public static class RemoteOperatorButtons {
-			public static final int intakeUp = 1;
-			public static final int intakeDown = 2;
-			// public static final int intakeAlgeaIn = 7;
-			// public static final int intakeAlgeaShoot = 8;
-			public static final int home = 7;
-		}
-
-		public static class AMTEncoder {
-			public static final int Elevator_Inner_A = 6;
-			public static final int Elevator_Inner_B = 7;
-			public static final int Elevator_Outer_A = 8;
-			public static final int Elevator_Outer_B = 9;
-			public static final int hoodEncoderId = 0;
-			public static final int hoodEncoderId2 = 1;
-		}
 		
-		public static class Switch {
-			public static final int Elevator_Outer_Bottom = 5;
-		}
+
+
+		
+	
 
 		public static class Output {
 			// Intake outputs

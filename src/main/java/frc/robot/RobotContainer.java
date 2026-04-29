@@ -6,41 +6,31 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
-import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
-
-
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-
-//import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-//import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-
-import static frc.robot.Constants.ControllerConstants.driverJoystick;
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-
-import frc.robot.subsystems.Remote;
-import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Remote;
+import frc.robot.subsystems.Remote.IntakeDeployMode;
 import frc.robot.subsystems.Remote.IntakeMode;
 import frc.robot.subsystems.Remote.ShooterMode;
-import frc.robot.subsystems.Remote.IntakeDeployMode;
-
+import frc.robot.subsystems.Shooter;
 
 public class RobotContainer {
     private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -56,28 +46,24 @@ public class RobotContainer {
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
-    
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
-    public final Pigeon2 pigeon2 = new Pigeon2(21);    
+    private final CommandXboxController driverJoystick = new CommandXboxController(0);
 
+    
     public final Remote m_remote = new Remote();
     public final Shooter m_shooter = new Shooter();
     public final Intake m_intake = new Intake();
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
-    /* Path follower */
-    private final SendableChooser<Command> autoChooser;
-
-    private ShooterMode autoShooterMode= ShooterMode.Idle;
+      private ShooterMode autoShooterMode= ShooterMode.Idle;
     private IntakeMode autoIntakeMode = IntakeMode.Idle;
     private IntakeDeployMode autoIntakeDeployMode = IntakeDeployMode.Stow;
-
+     private final SendableChooser<Command> autoChooser;
 
     public RobotContainer() {
         
-  
         NamedCommands.registerCommand("IntakeDeploy", Commands.runOnce(() -> {
             autoIntakeDeployMode = IntakeDeployMode.Deploy; 
         }));
@@ -146,11 +132,10 @@ public class RobotContainer {
 
         autoChooser = AutoBuilder.buildAutoChooser("efekapi");
         SmartDashboard.putData("Auto Mode", autoChooser);
-
         configureBindings();
     }
 
-    public ShooterMode getAutoShooterMode(){
+     public ShooterMode getAutoShooterMode(){
         return autoShooterMode;
     }
      public IntakeMode getAutoIntakeMode(){
@@ -194,12 +179,9 @@ public class RobotContainer {
         // Reset the field-centric heading on left bumper press.
         driverJoystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
-        // Toggle auto-rotation on back button
-  
-
         drivetrain.registerTelemetry(logger::telemeterize);
 
-        driverJoystick.y().whileTrue(
+          driverJoystick.y().whileTrue(
             drivetrain.applyRequest(() -> {
                 Pose2d currentPose = drivetrain.getState().Pose;
 
@@ -222,12 +204,17 @@ public class RobotContainer {
                         .withTargetDirection(targetAngle);
             })
         );
+        
 
+        
     }
 
     public Command getAutonomousCommand() {
-        /*final var idle = new SwerveRequest.Idle();
+        // Simple drive forward auton
+        final var idle = new SwerveRequest.Idle();
+        
         return Commands.sequence(
+            /* 
             // Reset our field centric heading to match the robot
             // facing away from our alliance station wall (0 deg).
             drivetrain.runOnce(() -> drivetrain.seedFieldCentric(Rotation2d.kZero)),
@@ -238,9 +225,10 @@ public class RobotContainer {
                     .withRotationalRate(0)
             )
             .withTimeout(5.0),
+            */
+
             // Finally idle for the rest of auton
             drivetrain.applyRequest(() -> idle)
-        );*/
-        return autoChooser.getSelected();
+        );
     }
 }
