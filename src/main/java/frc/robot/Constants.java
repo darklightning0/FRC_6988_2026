@@ -28,10 +28,10 @@ public final class Constants {
 		public static final int driverJoystickID = 1;
 		public static final int operatorJoystickID = 0;
 
-		public static final CommandXboxController driverJoystick = new CommandXboxController(driverJoystickID);
-		public static final XboxController driverJoystickDef = new XboxController(driverJoystickID);
-		public static final CommandXboxController operatorJoystick = new CommandXboxController(operatorJoystickID);
-		public static final XboxController operatorJoystickDef = new XboxController(operatorJoystickID);
+		public static final CommandXboxController driverJoystick = new CommandXboxController(0);
+		public static final XboxController driverJoystickDef = new XboxController(0);
+		public static final CommandXboxController operatorJoystick = new CommandXboxController(1);
+		public static final XboxController operatorJoystickDef = new XboxController(1);
 
 	}
 	// ALGEA INTAKE
