@@ -3,7 +3,10 @@ package frc.robot.subsystems;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.SubsystemConstants;
+
+// this line imports the enums from remote.java bro
 import frc.robot.subsystems.Remote.IntakeMode;
+
 import frc.robot.subsystems.Remote.IntakeDeployMode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -12,11 +15,13 @@ import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 
 public class Intake {
     // Standard duty cycle for the roller Falcon
     DutyCycleOut rollerRequest = new DutyCycleOut(1);
-    VoltageOut armRequest = new VoltageOut();
+
     VelocityVoltage rollerRequestVelocity = new VelocityVoltage(16);
     
     // Motion Magic request for the deployer Kraken
